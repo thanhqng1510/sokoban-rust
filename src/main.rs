@@ -17,7 +17,7 @@ mod resources;
 
 
 fn main() -> GameResult {
-    let context_builder = ggez::ContextBuilder::new("Rust Sokoban", "Thanh Nguyen")
+    let context_builder = ggez::ContextBuilder::new("Rust Sokoban", "Thanh Nguyen - Ly Nguyen")
         .window_setup(conf::WindowSetup::default().title("Rust Sokoban"))
         .window_mode(conf::WindowMode::default().dimensions(800., 600.))
         .add_resource_path(path::PathBuf::from("./resources"));

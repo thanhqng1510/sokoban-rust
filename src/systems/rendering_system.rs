@@ -17,17 +17,20 @@ impl<'a> RenderingSystem<'a> {
 }
 
 impl<'a> System<'a> for RenderingSystem<'a> {
-    type SystemData = (ReadStorage<'a, Position>, ReadStorage<'a, Renderable>);
+    type SystemData = (
+        ReadStorage<'a, Position>,
+        ReadStorage<'a, Renderable>
+    );
 
     fn run(&mut self, data: Self::SystemData) {
-        graphics::clear(self.context, graphics::Color::new(0.95, 0.95, 0.95, 1.));
+        graphics::clear(self.context, graphics::Color::new(0.7, 0.7, 0.7, 1.));
 
         let (positions, renderables) = data;
         let mut rendering_data = (&positions, &renderables).join().collect::<Vec<_>>();
         rendering_data.sort_by_key(|&k| k.0.z);
 
-        for (position, renderables) in rendering_data.iter() {
-            let image = Image::new(self.context, &renderables.path).unwrap();
+        for (position, renderable) in rendering_data {
+            let image = Image::new(self.context, &renderable.path).unwrap();
             let x = position.x as f32 * TILE_WIDTH;
             let y = position.y as f32 * TILE_WIDTH;
 
