@@ -4,6 +4,7 @@ use crate::systems::rendering_system::RenderingSystem;
 use ggez::event::{KeyCode, KeyMods};
 use crate::resources::input_queue::InputQueue;
 use crate::systems::input_system::InputSystem;
+use crate::systems::gameplay_state_system::GameplayStateSystem;
 
 
 pub struct Game {
@@ -15,6 +16,10 @@ impl event::EventHandler for Game {
         {
             let mut is = InputSystem {};
             is.run_now(&self.world);
+        }
+        {
+            let mut gss = GameplayStateSystem {};
+            gss.run_now(&self.world);
         }
         Ok(())
     }

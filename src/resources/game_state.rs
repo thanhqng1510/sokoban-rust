@@ -1,3 +1,7 @@
+use std::fmt::{Display, Formatter};
+use std::fmt;
+
+
 pub enum GameplayState {
     Playing,
     Won
@@ -6,6 +10,16 @@ pub enum GameplayState {
 impl Default for GameplayState {
     fn default() -> Self {
         Self::Playing
+    }
+}
+
+impl Display for GameplayState {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            GameplayState::Playing => "Playing",
+            GameplayState::Won => "Won"
+        })?;
+        Ok(())
     }
 }
 
