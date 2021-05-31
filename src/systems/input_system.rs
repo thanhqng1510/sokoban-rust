@@ -4,6 +4,7 @@ use crate::resources::input_queue::InputQueue;
 use ggez::event::KeyCode;
 use crate::levels::{MAP_HEIGHT, MAP_WIDTH};
 use std::collections::HashMap;
+use crate::resources::game_state::GameState;
 
 
 type EntityIdMap = HashMap<(u8, u8), u32>;
@@ -38,6 +39,7 @@ impl InputSystem {
 impl<'a> System<'a> for InputSystem {
     type SystemData = (
         Write<'a, InputQueue>,
+        Write<'a, GameState>,
         Entities<'a>,
         WriteStorage<'a, Position>,
         ReadStorage<'a, Player>,
@@ -48,6 +50,7 @@ impl<'a> System<'a> for InputSystem {
     fn run(&mut self, data: Self::SystemData) {
         let (
             mut input_queue,
+            mut game_state,
             entities,
             mut positions,
             player,
@@ -55,9 +58,9 @@ impl<'a> System<'a> for InputSystem {
             blockings
         ) = data;
 
-        let mut to_move = Vec::new();
-
         if let Some(key) = input_queue.pop() {
+            let mut to_move = Vec::new();
+
             for (player_pos, _player) in (&positions, &player).join() {
                 let movables = (&entities, &movables, &positions)
                     .join()
@@ -70,6 +73,8 @@ impl<'a> System<'a> for InputSystem {
 
                 self.handle_movement(key, player_pos, movables, blockings, &mut to_move);
             }
+
+            if to_move.len() > 0 { game_state.moves_count += 1; }
 
             for id in to_move {
                 let position = positions.get_mut(entities.entity(id)).unwrap();
