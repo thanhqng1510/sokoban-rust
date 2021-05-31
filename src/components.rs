@@ -1,18 +1,18 @@
 use specs::{Component, VecStorage, NullStorage, World, WorldExt};
 
 
-#[derive(Debug, Component, Copy, Clone)]
-#[storage(VecStorage)]
+#[derive(Copy, Clone)]
 pub struct Position {
     pub x: u8,
     pub y: u8,
     pub z: u8
 }
 
-#[derive(Debug, Component)]
+#[derive(Component)]
 #[storage(VecStorage)]
 pub struct Renderable {
-    pub path: String
+    pub resource_path: &'static str,
+    pub position: Position
 }
 
 #[derive(Component, Default)]
@@ -40,7 +40,6 @@ pub struct Movable;
 pub struct Blocking;
 
 pub fn register_components(world: &mut World) {
-    world.register::<Position>();
     world.register::<Renderable>();
     world.register::<Wall>();
     world.register::<Player>();

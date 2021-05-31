@@ -1,6 +1,6 @@
 use specs::{System, Write, ReadStorage, Join};
 use crate::resources::game_state::{GameState, GameplayState};
-use crate::components::{Box, BoxSpot, Position};
+use crate::components::{Box, BoxSpot, Renderable};
 use std::collections::HashSet;
 
 
@@ -11,18 +11,18 @@ impl<'a> System<'a> for GameplayStateSystem {
         Write<'a, GameState>,
         ReadStorage<'a, Box>,
         ReadStorage<'a, BoxSpot>,
-        ReadStorage<'a, Position>
+        ReadStorage<'a, Renderable>
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut game_state, boxes, box_spots, positions) = data;
+        let (mut game_state, boxes, box_spots, renderables) = data;
 
-        let spot_positions = (&box_spots, &positions).join()
-            .map(|k| (k.1.x, k.1.y))
+        let spot_positions = (&box_spots, &renderables).join()
+            .map(|k| (k.1.position.x, k.1.position.y))
             .collect::<HashSet<_>>();
 
-        for (_, position) in (&boxes, &positions).join() {
-            if !spot_positions.contains(&(position.x, position.y)) {
+        for (_, renderable) in (&boxes, &renderables).join() {
+            if !spot_positions.contains(&(renderable.position.x, renderable.position.y)) {
                 game_state.gameplay_state = GameplayState::Playing;
                 return;
             }

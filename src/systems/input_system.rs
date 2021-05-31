@@ -1,5 +1,5 @@
 use specs::{System, ReadStorage, Write, Join, Entities, WriteStorage};
-use crate::components::{Player, Position, Movable, Blocking};
+use crate::components::{Player, Position, Movable, Blocking, Renderable};
 use crate::resources::input_queue::InputQueue;
 use ggez::event::KeyCode;
 use crate::levels::{MAP_HEIGHT, MAP_WIDTH};
@@ -41,7 +41,7 @@ impl<'a> System<'a> for InputSystem {
         Write<'a, InputQueue>,
         Write<'a, GameState>,
         Entities<'a>,
-        WriteStorage<'a, Position>,
+        WriteStorage<'a, Renderable>,
         ReadStorage<'a, Player>,
         ReadStorage<'a, Movable>,
         ReadStorage<'a, Blocking>
@@ -52,7 +52,7 @@ impl<'a> System<'a> for InputSystem {
             mut input_queue,
             mut game_state,
             entities,
-            mut positions,
+            mut renderables,
             player,
             movables,
             blockings
@@ -61,28 +61,28 @@ impl<'a> System<'a> for InputSystem {
         if let Some(key) = input_queue.pop() {
             let mut to_move = Vec::new();
 
-            for (player_pos, _player) in (&positions, &player).join() {
-                let movables = (&entities, &movables, &positions)
+            for (renderable_player, _player) in (&renderables, &player).join() {
+                let movables = (&entities, &movables, &renderables)
                     .join()
-                    .map(|t| ((t.2.x, t.2.y), t.0.id()))
+                    .map(|t| ((t.2.position.x, t.2.position.y), t.0.id()))
                     .collect::<HashMap<_, _>>();
-                let blockings = (&entities, &blockings, &positions)
+                let blockings = (&entities, &blockings, &renderables)
                     .join()
-                    .map(|t| ((t.2.x, t.2.y), t.0.id()))
+                    .map(|t| ((t.2.position.x, t.2.position.y), t.0.id()))
                     .collect::<HashMap<_, _>>();
 
-                self.handle_movement(key, player_pos, movables, blockings, &mut to_move);
+                self.handle_movement(key, &renderable_player.position, movables, blockings, &mut to_move);
             }
 
             if to_move.len() > 0 { game_state.moves_count += 1; }
 
             for id in to_move {
-                let position = positions.get_mut(entities.entity(id)).unwrap();
+                let renderable = renderables.get_mut(entities.entity(id)).unwrap();
                 match key {
-                    KeyCode::Up => position.y -= 1,
-                    KeyCode::Down => position.y += 1,
-                    KeyCode::Left => position.x -= 1,
-                    KeyCode::Right => position.x += 1,
+                    KeyCode::Up => renderable.position.y -= 1,
+                    KeyCode::Down => renderable.position.y += 1,
+                    KeyCode::Left => renderable.position.x -= 1,
+                    KeyCode::Right => renderable.position.x += 1,
                     _ => ()
                 }
             }
