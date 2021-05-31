@@ -42,19 +42,8 @@ pub fn load_map(world: &mut World, map_string: String) {
 }
 
 pub fn initialize_level(world: &mut World, level: i8) {
-    /*const MAP: &str = "
-    N N W W W W W W
-    W W W . . . . W
-    W . . . B . . W
-    W . . . . . . W
-    W . P . . . . W
-    W . . . . . . W
-    W . . S . . . W
-    W . . . . . . W
-    W W W W W W W W
-    ";*/
+    let map= &fs::read_to_string(format!("./resources/maps/map_{}.txt", level))
+        .expect(&format!("Unable to read file. Check if level {} exists?", level));
 
-    let map= &*fs::read_to_string(format!("D:/Music/FPC/Code/Rust/sukoban-rust/resources/maps/map_{}.txt", level))
-        .expect(&*format!("Unable to read file. Check if level {} exists?", level));
     load_map(world, map.to_string());
 }
