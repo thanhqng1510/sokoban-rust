@@ -26,7 +26,7 @@ fn main() -> GameResult {
     let game = &mut Game { world: World::new() };
     register_components(&mut game.world);
     register_resources(&mut game.world);
-    initialize_level(&mut game.world);
+    initialize_level(&mut game.world, 4);
 
     event::run(context, event_loop, game)
 }
