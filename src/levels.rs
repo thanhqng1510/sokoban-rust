@@ -1,7 +1,7 @@
 use std::fs;
 use specs::World;
 use crate::entities::{create_player, create_wall, create_box, create_floor, create_box_spot};
-use crate::components::Position;
+use crate::components::{Position, Direction};
 
 
 pub const MAP_WIDTH: u8 = 8;
@@ -23,7 +23,7 @@ pub fn load_map(world: &mut World, map_string: String) {
                     create_floor(world, position);
                 },
                 "P" => {
-                    create_player(world, position);
+                    create_player(world, position, Direction::Down);
                     create_floor(world, position);
                 },
                 "B" => {
