@@ -1,3 +1,4 @@
+use std::fs;
 use specs::World;
 use crate::entities::{create_player, create_wall, create_box, create_floor, create_box_spot};
 use crate::components::Position;
@@ -40,17 +41,9 @@ pub fn load_map(world: &mut World, map_string: String) {
     }
 }
 
-pub fn initialize_level(world: &mut World) {
-    const MAP: &str = "
-    N N W W W W W W
-    W W W . . . . W
-    W . . . B . . W
-    W . . . . . . W
-    W . P . . . . W
-    W . . . . . . W
-    W . . S . . . W
-    W . . . . . . W
-    W W W W W W W W
-    ";
-    load_map(world, MAP.to_string());
+pub fn initialize_level(world: &mut World, level: i8) {
+    let map= &fs::read_to_string(format!("./resources/maps/map_{}.txt", level))
+        .expect(&format!("Unable to read file. Check if level {} exists?", level));
+
+    load_map(world, map.to_string());
 }
