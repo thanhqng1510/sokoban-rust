@@ -1,5 +1,5 @@
 use specs::{System, ReadStorage, Write, Join, Entities, WriteStorage};
-use crate::components::{Player, Position, Movable, Blocking, Renderable};
+use crate::components::{Player, Position, Movable, Blocking, Renderable, Directional, Direction};
 use crate::resources::input_queue::InputQueue;
 use ggez::event::KeyCode;
 use crate::levels::{MAP_HEIGHT, MAP_WIDTH};
@@ -13,14 +13,16 @@ type IdVec = Vec<u32>;
 pub struct InputSystem {}
 
 impl InputSystem {
-    fn handle_movement(&self, key: KeyCode, player_pos: &Position, movables: EntityIdMap, blockings: EntityIdMap, to_move: &mut IdVec) {
+    fn handle_movement(&self, key: KeyCode, player_pos: &Position, movables: EntityIdMap, blockings: EntityIdMap) -> Option<IdVec> {
         let (checking_range, is_horizontal) = match key {
             KeyCode::Up => ((0..=player_pos.y).rev().collect::<Vec<_>>(), false),
             KeyCode::Down => ((player_pos.y..=MAP_HEIGHT).collect::<Vec<_>>(), false),
             KeyCode::Left => ((0..=player_pos.x).rev().collect::<Vec<_>>(), true),
             KeyCode::Right => ((player_pos.x..=MAP_WIDTH).collect::<Vec<_>>(), true),
-            _ => return
+            _ => return None
         };
+
+        let mut to_move = Vec::new();
 
         for idx in checking_range {
             let pos = if is_horizontal { (idx, player_pos.y) } else { (player_pos.x, idx) };
@@ -33,6 +35,8 @@ impl InputSystem {
                 }
             }
         }
+
+        Some(to_move)
     }
 }
 
@@ -42,6 +46,7 @@ impl<'a> System<'a> for InputSystem {
         Write<'a, GameState>,
         Entities<'a>,
         WriteStorage<'a, Renderable>,
+        WriteStorage<'a, Directional>,
         ReadStorage<'a, Player>,
         ReadStorage<'a, Movable>,
         ReadStorage<'a, Blocking>
@@ -53,13 +58,14 @@ impl<'a> System<'a> for InputSystem {
             mut game_state,
             entities,
             mut renderables,
+            mut directionals,
             player,
             movables,
             blockings
         ) = data;
 
         if let Some(key) = input_queue.pop() {
-            let mut to_move = Vec::new();
+            let mut to_move = None;
 
             for (renderable_player, _player) in (&renderables, &player).join() {
                 let movables = (&entities, &movables, &renderables)
@@ -71,19 +77,30 @@ impl<'a> System<'a> for InputSystem {
                     .map(|t| ((t.2.position.x, t.2.position.y), t.0.id()))
                     .collect::<HashMap<_, _>>();
 
-                self.handle_movement(key, &renderable_player.position, movables, blockings, &mut to_move);
+                to_move = self.handle_movement(key, &renderable_player.position, movables, blockings);
             }
 
-            if to_move.len() > 0 { game_state.moves_count += 1; }
+            if let Some(to_move) = to_move {
+                if to_move.len() > 0 { game_state.moves_count += 1; }
 
-            for id in to_move {
-                let renderable = renderables.get_mut(entities.entity(id)).unwrap();
-                match key {
-                    KeyCode::Up => renderable.position.y -= 1,
-                    KeyCode::Down => renderable.position.y += 1,
-                    KeyCode::Left => renderable.position.x -= 1,
-                    KeyCode::Right => renderable.position.x += 1,
-                    _ => ()
+                for id in to_move {
+                    let renderable = renderables.get_mut(entities.entity(id)).unwrap();
+                    match key {
+                        KeyCode::Up => renderable.position.y -= 1,
+                        KeyCode::Down => renderable.position.y += 1,
+                        KeyCode::Left => renderable.position.x -= 1,
+                        KeyCode::Right => renderable.position.x += 1,
+                        _ => ()
+                    }
+                    if let Some(directional) = directionals.get_mut(entities.entity(id)) {
+                        match key {
+                            KeyCode::Up => directional.direction = Direction::Up,
+                            KeyCode::Down => directional.direction = Direction::Down,
+                            KeyCode::Left => directional.direction = Direction::Left,
+                            KeyCode::Right => directional.direction = Direction::Right,
+                            _ => ()
+                        }
+                    }
                 }
             }
         }

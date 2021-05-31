@@ -46,7 +46,7 @@ pub fn create_box_spot(world: &mut World, position: Position) {
         .build();
 }
 
-pub fn create_player(world: &mut World, position: Position) {
+pub fn create_player(world: &mut World, position: Position, direction: Direction) {
     world.create_entity()
         .with(Renderable {
             resource_path: "/images/player.png",
@@ -54,5 +54,6 @@ pub fn create_player(world: &mut World, position: Position) {
         })
         .with(Player {})
         .with(Movable {})
+        .with(Directional { direction })
         .build();
 }
