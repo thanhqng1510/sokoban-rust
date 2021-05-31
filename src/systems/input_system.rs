@@ -92,7 +92,8 @@ impl<'a> System<'a> for InputSystem {
                         KeyCode::Right => renderable.position.x += 1,
                         _ => ()
                     }
-                    if let Some(directional) = directionals.get_mut(entities.entity(id)) {
+                    if player.contains(entities.entity(id)) {
+                        let directional = directionals.get_mut(entities.entity(id)).unwrap();
                         match key {
                             KeyCode::Up => directional.direction = Direction::Up,
                             KeyCode::Down => directional.direction = Direction::Down,
