@@ -39,7 +39,7 @@ pub struct Movable;
 #[storage(NullStorage)]
 pub struct Blocking;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub enum Direction {
     Left,
     Up,
@@ -47,7 +47,7 @@ pub enum Direction {
     Down
 }
 
-#[derive(Debug, Component, Copy, Clone)]
+#[derive(Component, Copy, Clone)]
 #[storage(VecStorage)]
 pub struct Directional {
     pub direction: Direction
