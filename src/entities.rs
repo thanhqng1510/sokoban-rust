@@ -38,11 +38,12 @@ pub fn create_box_spot(world: &mut World, position: Position) {
         .build();
 }
 
-pub fn create_player(world: &mut World, position: Position) {
+pub fn create_player(world: &mut World, position: Position, direction: Direction) {
     world.create_entity()
         .with(Position { z: 10, ..position })
         .with(Renderable { path: "/images/player.png".to_string() })
         .with(Player {})
         .with(Movable {})
+        .with(Directional { direction })
         .build();
 }

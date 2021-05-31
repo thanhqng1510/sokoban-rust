@@ -39,6 +39,20 @@ pub struct Movable;
 #[storage(NullStorage)]
 pub struct Blocking;
 
+#[derive(Debug, Copy, Clone)]
+pub enum Direction {
+    Left,
+    Up,
+    Right,
+    Down
+}
+
+#[derive(Debug, Component, Copy, Clone)]
+#[storage(VecStorage)]
+pub struct Directional {
+    pub direction: Direction
+}
+
 pub fn register_components(world: &mut World) {
     world.register::<Position>();
     world.register::<Renderable>();
@@ -48,4 +62,5 @@ pub fn register_components(world: &mut World) {
     world.register::<BoxSpot>();
     world.register::<Movable>();
     world.register::<Blocking>();
+    world.register::<Directional>();
 }
