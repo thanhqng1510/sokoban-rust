@@ -6,8 +6,10 @@ pub const TILE_WIDTH: f32 = 32.;
 
 pub fn create_wall(world: &mut World, position: Position) {
     world.create_entity()
-        .with(Position { z: 10, ..position })
-        .with(Renderable { path: "/images/wall.png".to_string() })
+        .with(Renderable {
+            resource_path: "/images/wall_brown.png",
+            position: Position { z: 10, ..position }
+        })
         .with(Wall {})
         .with(Blocking {})
         .build();
@@ -15,15 +17,19 @@ pub fn create_wall(world: &mut World, position: Position) {
 
 pub fn create_floor(world: &mut World, position: Position) {
     world.create_entity()
-        .with(Position { z: 5, ..position })
-        .with(Renderable { path: "/images/floor.png".to_string() })
+        .with(Renderable {
+            resource_path: "/images/floor_gravel_grass.png",
+            position: Position { z: 5, ..position }
+        })
         .build();
 }
 
 pub fn create_box(world: &mut World, position: Position) {
     world.create_entity()
-        .with(Position { z: 10, ..position })
-        .with(Renderable { path: "/images/box.png".to_string() })
+        .with(Renderable {
+            resource_path: "/images/box_beige.png",
+            position: Position { z: 10, ..position }
+        })
         .with(Box {})
         .with(Blocking {})
         .with(Movable {})
@@ -32,16 +38,20 @@ pub fn create_box(world: &mut World, position: Position) {
 
 pub fn create_box_spot(world: &mut World, position: Position) {
     world.create_entity()
-        .with(Position { z: 9, ..position })
-        .with(Renderable { path: "/images/box_spot.png".to_string() })
+        .with(Renderable {
+            resource_path: "/images/spot_beige.png",
+            position: Position { z: 9, ..position }
+        })
         .with(BoxSpot {})
         .build();
 }
 
 pub fn create_player(world: &mut World, position: Position, direction: Direction) {
     world.create_entity()
-        .with(Position { z: 10, ..position })
-        .with(Renderable { path: "/images/player.png".to_string() })
+        .with(Renderable {
+            resource_path: "/images/player_down_1.png",
+            position: Position { z: 10, ..position }
+        })
         .with(Player {})
         .with(Movable {})
         .with(Directional { direction })

@@ -1,18 +1,18 @@
 use specs::{Component, VecStorage, NullStorage, World, WorldExt};
 
 
-#[derive(Debug, Component, Copy, Clone)]
-#[storage(VecStorage)]
+#[derive(Copy, Clone)]
 pub struct Position {
     pub x: u8,
     pub y: u8,
     pub z: u8
 }
 
-#[derive(Debug, Component)]
+#[derive(Component)]
 #[storage(VecStorage)]
 pub struct Renderable {
-    pub path: String
+    pub resource_path: &'static str,
+    pub position: Position
 }
 
 #[derive(Component, Default)]
@@ -39,7 +39,7 @@ pub struct Movable;
 #[storage(NullStorage)]
 pub struct Blocking;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub enum Direction {
     Left,
     Up,
@@ -47,14 +47,13 @@ pub enum Direction {
     Down
 }
 
-#[derive(Debug, Component, Copy, Clone)]
+#[derive(Component, Copy, Clone)]
 #[storage(VecStorage)]
 pub struct Directional {
     pub direction: Direction
 }
 
 pub fn register_components(world: &mut World) {
-    world.register::<Position>();
     world.register::<Renderable>();
     world.register::<Wall>();
     world.register::<Player>();
