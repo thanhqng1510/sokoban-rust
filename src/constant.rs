@@ -18,7 +18,7 @@ lazy_static! {
 }
 
 pub const MAP_WIDTH: u8 = 10;
-pub const MAP_HEIGHT: u8 = 8;
+pub const MAP_HEIGHT: u8 = 9;
 
 pub const TILE_SIZE: f32 = 64.;
 
