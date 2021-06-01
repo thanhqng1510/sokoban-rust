@@ -29,7 +29,7 @@ pub struct Box;
 
 #[derive(Component, Default)]
 #[storage(NullStorage)]
-pub struct BoxSpot;
+pub struct Spot;
 
 #[derive(Component, Default)]
 #[storage(NullStorage)]
@@ -58,7 +58,7 @@ pub fn register_components(world: &mut World) {
     world.register::<Wall>();
     world.register::<Player>();
     world.register::<Box>();
-    world.register::<BoxSpot>();
+    world.register::<Spot>();
     world.register::<Movable>();
     world.register::<Blocking>();
     world.register::<Directional>();
