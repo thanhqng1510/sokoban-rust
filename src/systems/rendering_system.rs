@@ -39,13 +39,12 @@ impl<'a> System<'a> for RenderingSystem<'a> {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let background_color = (
-            BACKGROUND_COLOR["r"].as_f64().unwrap() as f32,
-            BACKGROUND_COLOR["g"].as_f64().unwrap() as f32,
-            BACKGROUND_COLOR["b"].as_f64().unwrap() as f32,
-            BACKGROUND_COLOR["a"].as_f64().unwrap() as f32
+        graphics::clear(self.context, graphics::Color::new(
+            *BACKGROUND_COLOR.get("r").unwrap(),
+            *BACKGROUND_COLOR.get("g").unwrap(),
+            *BACKGROUND_COLOR.get("b").unwrap(),
+            *BACKGROUND_COLOR.get("a").unwrap())
         );
-        graphics::clear(self.context, graphics::Color::new(background_color.0, background_color.1, background_color.2, background_color.3));
 
         let (game_state, renderables) = data;
         let mut rendering_data = (&renderables).join().collect::<Vec<_>>();

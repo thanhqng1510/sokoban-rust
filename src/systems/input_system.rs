@@ -65,8 +65,17 @@ impl<'a> System<'a> for InputSystem {
         ) = data;
 
         if let Some(key) = input_queue.pop() {
-            let mut to_move = None;
+            for(player_direction, _player) in (&mut directionals, &player).join() {
+                player_direction.direction = match key {
+                    KeyCode::Up => Direction::Up,
+                    KeyCode::Down => Direction::Down,
+                    KeyCode::Left => Direction::Left,
+                    KeyCode::Right => Direction::Right,
+                    _ => player_direction.direction
+                }
+            }
 
+            let mut to_move = None;
             for (renderable_player, _player) in (&renderables, &player).join() {
                 let movables = (&entities, &movables, &renderables)
                     .join()
@@ -92,16 +101,6 @@ impl<'a> System<'a> for InputSystem {
                         KeyCode::Right => renderable.position.x += 1,
                         _ => ()
                     }
-                }
-            }
-
-            for(directional_player, _player) in (&mut directionals, &player).join() {
-                directional_player.direction = match key {
-                    KeyCode::Up => Direction::Up,
-                    KeyCode::Down => Direction::Down,
-                    KeyCode::Left => Direction::Left,
-                    KeyCode::Right => Direction::Right,
-                    _ => directional_player.direction
                 }
             }
         }
