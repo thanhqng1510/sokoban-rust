@@ -1,4 +1,5 @@
 use specs::{Component, VecStorage, NullStorage, World, WorldExt};
+use std::collections::HashMap;
 
 
 #[derive(Copy, Clone)]
@@ -8,11 +9,20 @@ pub struct Position {
     pub z: u8
 }
 
+#[derive(Copy, Clone)]
+pub enum WallColor {
+    Beige,
+    Black,
+    Brown,
+    Gray
+}
+
 #[derive(Component)]
 #[storage(VecStorage)]
 pub struct Renderable {
-    pub resource_path: &'static str,
-    pub position: Position
+    pub position: Position,
+    pub resource_template_path: &'static str,
+    pub template_data: HashMap<&'static str, &'static str>
 }
 
 #[derive(Component, Default)]
@@ -47,7 +57,7 @@ pub enum Direction {
     Down
 }
 
-#[derive(Component, Copy, Clone)]
+#[derive(Component)]
 #[storage(VecStorage)]
 pub struct Directional {
     pub direction: Direction

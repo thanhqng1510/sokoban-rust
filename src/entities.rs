@@ -3,13 +3,14 @@ use crate::constant::{WALL_Z, FLOOR_Z, BOX_Z, SPOT_Z, PLAYER_Z};
 use crate::components::*;
 
 
-pub fn create_wall(world: &mut World, position: Position) {
+pub fn create_wall(world: &mut World, position: Position, color: WallColor, shape: WallShape) {
     world.create_entity()
         .with(Renderable {
-            resource_path: "/images/wall_brown.png",
-            position: Position { z: WALL_Z, ..position }
+            position: Position { z: WALL_Z, ..position },
+            resource_template_path: "/images/wall_{shape}_{color}.png",
+
         })
-        .with(Wall {})
+        .with(Wall { color, shape })
         .with(Blocking {})
         .build();
 }
