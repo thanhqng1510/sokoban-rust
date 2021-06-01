@@ -10,12 +10,6 @@ pub const WINDOW_HEIGHT: f32 = TILE_SIZE * MAP_HEIGHT as f32;
 
 pub const RESOURCE_PREFIX_PATH: &'static str = "./resources";
 
-lazy_static! {
-    pub static ref RESOURCE_PATH: HashMap<&'static str, &'static str> = vec![
-        ("BOX_BEIGE", "/images/box_beige.png")
-    ].into_iter().collect();
-}
-
 pub const MAP_WIDTH: u8 = 12;
 pub const MAP_HEIGHT: u8 = 9;
 

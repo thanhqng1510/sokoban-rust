@@ -1,7 +1,7 @@
 use std::fs;
 use specs::World;
 use crate::entities::{create_player, create_wall, create_box, create_floor, create_spot};
-use crate::components::{Position, Direction};
+use crate::components::{Position, Direction, WallColor, WallShape};
 use std::cmp::min;
 use crate::constant::{MAX_LEVEL, RESOURCE_PREFIX_PATH};
 
@@ -18,7 +18,7 @@ pub fn load_map(world: &mut World, map_string: String) {
             match column {
                 "." => create_floor(world, position),
                 "W" => {
-                    create_wall(world, position);
+                    create_wall(world, position, WallColor::Beige, WallShape::Round);
                     create_floor(world, position);
                 },
                 "P" => {

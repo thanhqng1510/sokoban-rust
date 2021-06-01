@@ -3,19 +3,16 @@ use specs::{System, ReadStorage, Join, Read};
 use crate::components::Renderable;
 use ggez::graphics::{Image, DrawParam, Color};
 use ggez::nalgebra as na;
+use strfmt::strfmt;
 use crate::constant::{TILE_SIZE, BACKGROUND_COLOR};
 use crate::resources::game_state::GameState;
 
 
 pub struct RenderingSystem<'a> {
-    context: &'a mut Context
+    pub context: &'a mut Context
 }
 
 impl<'a> RenderingSystem<'a> {
-    pub fn from(ctx: &'a mut Context) -> Self {
-        RenderingSystem { context: ctx }
-    }
-
     pub fn draw_text(&mut self, text: &str, x: f32, y: f32) {
         let text = graphics::Text::new(text);
         let destination = na::Point2::new(x, y);
@@ -51,7 +48,12 @@ impl<'a> System<'a> for RenderingSystem<'a> {
         rendering_data.sort_by_key(|&k| k.position.z);
 
         for renderable in rendering_data {
-            let image = Image::new(self.context, renderable.resource_path).unwrap();
+            let image_path = match renderable.template_data {
+                None => renderable.resource_template_path.to_owned(),
+                Some(ref template_data) => strfmt(renderable.resource_template_path, template_data).unwrap()
+            };
+            let image = Image::new(self.context, image_path).unwrap();
+
             let x = renderable.position.x as f32 * TILE_SIZE;
             let y = renderable.position.y as f32 * TILE_SIZE;
 

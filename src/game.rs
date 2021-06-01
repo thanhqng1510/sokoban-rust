@@ -26,7 +26,7 @@ impl event::EventHandler for Game {
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         {
-            let mut rs = RenderingSystem::from(ctx);
+            let mut rs = RenderingSystem { context: ctx };
             rs.run_now(&self.world);
         }
         Ok(())

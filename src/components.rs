@@ -1,5 +1,7 @@
 use specs::{Component, VecStorage, NullStorage, World, WorldExt};
 use std::collections::HashMap;
+use std::fmt::{Formatter, Display};
+use std::fmt;
 
 
 #[derive(Copy, Clone)]
@@ -7,6 +9,14 @@ pub struct Position {
     pub x: u8,
     pub y: u8,
     pub z: u8
+}
+
+#[derive(Component)]
+#[storage(VecStorage)]
+pub struct Renderable {
+    pub position: Position,
+    pub resource_template_path: &'static str,
+    pub template_data: Option<HashMap<String, String>>
 }
 
 #[derive(Copy, Clone)]
@@ -17,12 +27,30 @@ pub enum WallColor {
     Gray
 }
 
-#[derive(Component)]
-#[storage(VecStorage)]
-pub struct Renderable {
-    pub position: Position,
-    pub resource_template_path: &'static str,
-    pub template_data: HashMap<&'static str, &'static str>
+impl Display for WallColor {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match *self {
+            Self::Beige => write!(f, "beige"),
+            Self::Black => write!(f, "black"),
+            Self::Brown => write!(f, "brown"),
+            Self::Gray => write!(f, "gray")
+        }
+    }
+}
+
+#[derive(Copy, Clone)]
+pub enum WallShape {
+    Square,
+    Round
+}
+
+impl Display for WallShape {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match *self {
+            Self::Square => write!(f, "square"),
+            Self::Round => write!(f, "round")
+        }
+    }
 }
 
 #[derive(Component, Default)]
