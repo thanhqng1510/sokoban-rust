@@ -1,5 +1,4 @@
 use specs::{Component, VecStorage, NullStorage, World, WorldExt};
-use std::collections::HashMap;
 use std::fmt::{Formatter, Display};
 use std::fmt;
 
@@ -16,7 +15,6 @@ pub struct Position {
 pub struct Renderable {
     pub position: Position,
     pub resource_template_path: &'static str,
-    pub template_data: Option<HashMap<String, String>>
 }
 
 #[derive(Copy, Clone)]

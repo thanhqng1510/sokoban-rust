@@ -1,7 +1,3 @@
-use lazy_static::lazy_static;
-use std::collections::HashMap;
-
-
 pub const GAME_TITLE: &'static str = "Rust Sokoban";
 pub const AUTHOR: &'static str = "Thanh Nguyen - Ly Nguyen";
 
@@ -22,12 +18,3 @@ pub const FLOOR_Z: u8 = 5;
 pub const BOX_Z: u8 = 10;
 pub const SPOT_Z: u8 = 9;
 pub const PLAYER_Z: u8 = 10;
-
-lazy_static! {
-    pub static ref BACKGROUND_COLOR: HashMap<&'static str, f32> = vec![
-        ("r", 0.7),
-        ("g", 0.7),
-        ("b", 0.7),
-        ("a", 1.)
-    ].into_iter().collect();
-}

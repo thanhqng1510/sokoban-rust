@@ -4,8 +4,9 @@ use crate::components::Renderable;
 use ggez::graphics::{Image, DrawParam, Color};
 use ggez::nalgebra as na;
 use strfmt::strfmt;
-use crate::constant::{TILE_SIZE, BACKGROUND_COLOR};
+use crate::constant::TILE_SIZE;
 use crate::resources::game_state::GameState;
+use crate::resources::var::{BackgroundColor, ComponentTemplateData};
 
 
 pub struct RenderingSystem<'a> {
@@ -31,27 +32,22 @@ impl<'a> RenderingSystem<'a> {
 
 impl<'a> System<'a> for RenderingSystem<'a> {
     type SystemData = (
+        Read<'a, ComponentTemplateData>,
+        Read<'a, BackgroundColor>,
         Read<'a, GameState>,
         ReadStorage<'a, Renderable>
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        graphics::clear(self.context, graphics::Color::new(
-            *BACKGROUND_COLOR.get("r").unwrap(),
-            *BACKGROUND_COLOR.get("g").unwrap(),
-            *BACKGROUND_COLOR.get("b").unwrap(),
-            *BACKGROUND_COLOR.get("a").unwrap())
-        );
+        let (component_data, bg_color, game_state, renderables) = data;
 
-        let (game_state, renderables) = data;
+        graphics::clear(self.context, graphics::Color::new(bg_color.r, bg_color.g, bg_color.b, bg_color.a));
+
         let mut rendering_data = (&renderables).join().collect::<Vec<_>>();
         rendering_data.sort_by_key(|&k| k.position.z);
 
         for renderable in rendering_data {
-            let image_path = match renderable.template_data {
-                None => renderable.resource_template_path.to_owned(),
-                Some(ref template_data) => strfmt(renderable.resource_template_path, template_data).unwrap()
-            };
+            let image_path = strfmt(renderable.resource_template_path, &component_data.data).unwrap();
             let image = Image::new(self.context, image_path).unwrap();
 
             let x = renderable.position.x as f32 * TILE_SIZE;
