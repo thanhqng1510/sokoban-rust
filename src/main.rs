@@ -7,6 +7,7 @@ use crate::components::register_components;
 use crate::game::Game;
 use crate::levels::initialize_level;
 use crate::resources::register_resources;
+use crate::constant::{AUTHOR, GAME_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, RESOURCE_PREFIX_PATH};
 
 mod components;
 mod entities;
@@ -14,13 +15,17 @@ mod levels;
 mod systems;
 mod game;
 mod resources;
+mod constant;
 
 
 fn main() -> GameResult {
-    let context_builder = ggez::ContextBuilder::new("Rust Sokoban", "Thanh Nguyen - Ly Nguyen")
-        .window_setup(conf::WindowSetup::default().title("Rust Sokoban").vsync(false))
-        .window_mode(conf::WindowMode::default().dimensions(800., 600.))
-        .add_resource_path(path::PathBuf::from("./resources"));
+    let context_builder = ggez::ContextBuilder::new(GAME_TITLE, AUTHOR)
+        .window_setup(conf::WindowSetup::default()
+            .title(GAME_TITLE)
+            .vsync(false))
+        .window_mode(conf::WindowMode::default()
+            .dimensions(WINDOW_WIDTH, WINDOW_HEIGHT))
+        .add_resource_path(path::PathBuf::from(RESOURCE_PREFIX_PATH));
     let (context, event_loop) = &mut context_builder.build()?;
 
     let game = &mut Game { world: World::new() };

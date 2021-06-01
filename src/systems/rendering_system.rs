@@ -3,7 +3,7 @@ use specs::{System, ReadStorage, Join, Read};
 use crate::components::Renderable;
 use ggez::graphics::{Image, DrawParam, Color};
 use ggez::nalgebra as na;
-use crate::entities::TILE_WIDTH;
+use crate::constant::{TILE_SIZE, BACKGROUND_COLOR};
 use crate::resources::game_state::GameState;
 
 
@@ -39,7 +39,13 @@ impl<'a> System<'a> for RenderingSystem<'a> {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        graphics::clear(self.context, graphics::Color::new(0.7, 0.7, 0.7, 1.));
+        let background_color = (
+            BACKGROUND_COLOR["r"].as_f64().unwrap() as f32,
+            BACKGROUND_COLOR["g"].as_f64().unwrap() as f32,
+            BACKGROUND_COLOR["b"].as_f64().unwrap() as f32,
+            BACKGROUND_COLOR["a"].as_f64().unwrap() as f32
+        );
+        graphics::clear(self.context, graphics::Color::new(background_color.0, background_color.1, background_color.2, background_color.3));
 
         let (game_state, renderables) = data;
         let mut rendering_data = (&renderables).join().collect::<Vec<_>>();
@@ -47,8 +53,8 @@ impl<'a> System<'a> for RenderingSystem<'a> {
 
         for renderable in rendering_data {
             let image = Image::new(self.context, renderable.resource_path).unwrap();
-            let x = renderable.position.x as f32 * TILE_WIDTH;
-            let y = renderable.position.y as f32 * TILE_WIDTH;
+            let x = renderable.position.x as f32 * TILE_SIZE;
+            let y = renderable.position.y as f32 * TILE_SIZE;
 
             let draw_params = DrawParam::new().dest(na::Point2::new(x, y));
             graphics::draw(self.context, &image, draw_params).unwrap();

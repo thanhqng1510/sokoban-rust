@@ -8,7 +8,7 @@ pub struct InputQueue {
 }
 
 impl InputQueue {
-    const MAX_LEN: usize = 50;
+    const MAX_LEN: usize = 20;
 
     pub fn push(&mut self, keycode: KeyCode) {
         if self.keys_pressed.len() >= Self::MAX_LEN { self.keys_pressed.pop_front().unwrap(); }

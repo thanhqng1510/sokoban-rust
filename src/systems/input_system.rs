@@ -2,7 +2,7 @@ use specs::{System, ReadStorage, Write, Join, Entities, WriteStorage};
 use crate::components::{Player, Position, Movable, Blocking, Renderable, Directional, Direction};
 use crate::resources::input_queue::InputQueue;
 use ggez::event::KeyCode;
-use crate::levels::{MAP_HEIGHT, MAP_WIDTH};
+use crate::constant::{MAP_HEIGHT, MAP_WIDTH};
 use std::collections::HashMap;
 use crate::resources::game_state::GameState;
 
