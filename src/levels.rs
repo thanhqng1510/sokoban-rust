@@ -1,11 +1,10 @@
 use std::fs;
 use specs::World;
-use crate::entities::{create_player, create_wall, create_box, create_floor, create_box_spot};
+use crate::entities::{create_player, create_wall, create_box, create_floor, create_spot};
 use crate::components::{Position, Direction};
+use std::cmp::min;
+use crate::constant::{MAX_LEVEL, RESOURCE_PREFIX_PATH};
 
-
-pub const MAP_WIDTH: u8 = 8;
-pub const MAP_HEIGHT: u8 = 9;
 
 pub fn load_map(world: &mut World, map_string: String) {
     let rows = map_string.trim().split('\n').map(|x| x.trim()).collect::<Vec<_>>();
@@ -31,7 +30,7 @@ pub fn load_map(world: &mut World, map_string: String) {
                     create_floor(world, position);
                 },
                 "S" => {
-                    create_box_spot(world, position);
+                    create_spot(world, position);
                     create_floor(world, position);
                 },
                 "N" => (),
@@ -41,9 +40,10 @@ pub fn load_map(world: &mut World, map_string: String) {
     }
 }
 
-pub fn initialize_level(world: &mut World, level: i8) {
-    let map= &fs::read_to_string(format!("./resources/maps/map_{}.txt", level))
-        .expect(&format!("Unable to read file. Check if level {} exists?", level));
+pub fn initialize_level(world: &mut World, level: u8) {
+    let level = min(level, MAX_LEVEL);
+    let map= &fs::read_to_string(format!("{}/maps/map_{}.txt", RESOURCE_PREFIX_PATH, level))
+        .expect(&format!("Unable to read file. Check if level {} exists!", level));
 
     load_map(world, map.to_string());
 }

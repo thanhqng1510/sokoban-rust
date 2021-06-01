@@ -1,6 +1,6 @@
 use specs::{System, Write, ReadStorage, Join};
 use crate::resources::game_state::{GameState, GameplayState};
-use crate::components::{Box, BoxSpot, Renderable};
+use crate::components::{Box, Spot, Renderable};
 use std::collections::HashSet;
 
 
@@ -10,7 +10,7 @@ impl<'a> System<'a> for GameplayStateSystem {
     type SystemData = (
         Write<'a, GameState>,
         ReadStorage<'a, Box>,
-        ReadStorage<'a, BoxSpot>,
+        ReadStorage<'a, Spot>,
         ReadStorage<'a, Renderable>
     );
 
