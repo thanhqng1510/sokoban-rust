@@ -92,15 +92,16 @@ impl<'a> System<'a> for InputSystem {
                         KeyCode::Right => renderable.position.x += 1,
                         _ => ()
                     }
-                    if let Some(directional) = directionals.get_mut(entities.entity(id)) {
-                        match key {
-                            KeyCode::Up => directional.direction = Direction::Up,
-                            KeyCode::Down => directional.direction = Direction::Down,
-                            KeyCode::Left => directional.direction = Direction::Left,
-                            KeyCode::Right => directional.direction = Direction::Right,
-                            _ => ()
-                        }
-                    }
+                }
+            }
+
+            for(directional_player, _player) in (&mut directionals, &player).join() {
+                directional_player.direction = match key {
+                    KeyCode::Up => Direction::Up,
+                    KeyCode::Down => Direction::Down,
+                    KeyCode::Left => Direction::Left,
+                    KeyCode::Right => Direction::Right,
+                    _ => directional_player.direction
                 }
             }
         }
