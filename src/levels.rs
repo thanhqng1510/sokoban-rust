@@ -1,7 +1,7 @@
 use std::fs;
 use specs::World;
 use crate::entities::{create_player, create_wall, create_box, create_floor, create_spot};
-use crate::components::{Position, Direction, WallColor, WallShape};
+use crate::components::{Position, Direction, WallColor, WallShape, FloorType, FloorMaterial};
 use std::cmp::min;
 use crate::constant::{MAX_LEVEL, RESOURCE_PREFIX_PATH};
 
@@ -16,22 +16,22 @@ pub fn load_map(world: &mut World, map_string: String) {
             let position = Position { x: x as u8, y: y as u8, z: 0 };
 
             match column {
-                "." => create_floor(world, position),
+                "." => create_floor(world, position, FloorType::Gravel, FloorMaterial::Concrete),
                 "W" => {
                     create_wall(world, position, WallColor::Beige, WallShape::Round);
-                    create_floor(world, position);
+                    create_floor(world, position, FloorType::Gravel, FloorMaterial::Concrete);
                 },
                 "P" => {
                     create_player(world, position, Direction::Down);
-                    create_floor(world, position);
+                    create_floor(world, position, FloorType::Gravel, FloorMaterial::Concrete);
                 },
                 "B" => {
                     create_box(world, position);
-                    create_floor(world, position);
+                    create_floor(world, position, FloorType::Gravel, FloorMaterial::Concrete);
                 },
                 "S" => {
                     create_spot(world, position);
-                    create_floor(world, position);
+                    create_floor(world, position, FloorType::Gravel, FloorMaterial::Concrete);
                 },
                 "N" => (),
                 c => panic!("Unrecognized map item {}", c)

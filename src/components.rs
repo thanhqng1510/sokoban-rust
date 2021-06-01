@@ -91,6 +91,40 @@ pub struct Directional {
     pub direction: Direction
 }
 
+#[derive(Copy, Clone)]
+pub enum FloorMaterial {
+    Concrete,
+    Dirt,
+    Grass,
+    Sand
+}
+
+impl Display for FloorMaterial {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match *self {
+            Self::Concrete => write!(f, "concrete"),
+            Self::Dirt => write!(f, "dirt"),
+            Self::Grass => write!(f, "grass"),
+            Self::Sand => write!(f, "sand")
+        }
+    }
+}
+
+#[derive(Copy, Clone)]
+pub enum FloorType {
+    Clean,
+    Gravel
+}
+
+impl Display for FloorType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match *self {
+            Self::Clean => write!(f, "clean"),
+            Self::Gravel => write!(f, "gravel")
+        }
+    }
+}
+
 pub fn register_components(world: &mut World) {
     world.register::<Renderable>();
     world.register::<Wall>();

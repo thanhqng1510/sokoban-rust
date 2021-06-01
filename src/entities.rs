@@ -18,12 +18,15 @@ pub fn create_wall(world: &mut World, position: Position, color: WallColor, shap
         .build();
 }
 
-pub fn create_floor(world: &mut World, position: Position) {
+pub fn create_floor(world: &mut World, position: Position, floor_type: FloorType, material: FloorMaterial) {
     world.create_entity()
         .with(Renderable {
             position: Position { z: FLOOR_Z, ..position },
-            resource_template_path: "/images/floor_gravel_grass.png",
-            template_data: None
+            resource_template_path: "/images/floor_{type}_{material}.png",
+            template_data: Some(vec![
+                ("type".to_string(), floor_type.to_string()),
+                ("material".to_string(), material.to_string())
+            ].into_iter().collect())
         })
         .build();
 }
@@ -32,7 +35,7 @@ pub fn create_box(world: &mut World, position: Position) {
     world.create_entity()
         .with(Renderable {
             position: Position { z: BOX_Z, ..position },
-            resource_template_path: "/images/box_beige.png",
+            resource_template_path: "/images/box_bright_beige.png",
             template_data: None
         })
         .with(Box {})
