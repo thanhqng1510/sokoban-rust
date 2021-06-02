@@ -28,10 +28,12 @@ fn main() -> GameResult {
         .add_resource_path(path::PathBuf::from(RESOURCE_PREFIX_PATH));
     let (context, event_loop) = &mut context_builder.build()?;
 
-    let game = &mut Game { world: World::new() };
+    let mut game = Game::new(World::new(), context);
+    ///Music test
+    game.play_ingame_music();
     register_components(&mut game.world);
     register_resources(&mut game.world);
     initialize_level(&mut game.world, 0);
 
-    event::run(context, event_loop, game)
+    event::run(context, event_loop, &mut game)
 }
