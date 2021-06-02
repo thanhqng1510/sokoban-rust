@@ -1,6 +1,7 @@
 use specs::{Component, VecStorage, NullStorage};
 use std::fmt::{Formatter, Display};
 use std::fmt;
+use std::collections::HashMap;
 
 
 #[derive(Copy, Clone)]
@@ -21,11 +22,12 @@ impl Position {
 pub struct Renderable {
     pub position: Position,
     pub resource_template_path: &'static str,
+    pub resource_template_data: HashMap<String, String>
 }
 
 impl Renderable {
-    pub fn from(position: Position, resource_template_path: &'static str) -> Self {
-        Renderable { position, resource_template_path }
+    pub fn from(position: Position, resource_template_path: &'static str, resource_template_data: HashMap<String, String>) -> Self {
+        Renderable { position, resource_template_path, resource_template_data }
     }
 }
 
@@ -80,6 +82,48 @@ pub struct Player;
 impl Player {
     pub fn new() -> Self {
         Player {}
+    }
+}
+
+#[derive(Copy, Clone)]
+pub enum BoxSpotColor {
+    Beige,
+    Black,
+    Blue,
+    Brown,
+    Gray,
+    Purple,
+    Red,
+    Yellow
+}
+
+impl Display for BoxSpotColor {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match *self {
+            Self::Beige => write!(f, "beige"),
+            Self::Black => write!(f, "black"),
+            Self::Blue => write!(f, "blue"),
+            Self::Brown => write!(f, "brown"),
+            Self::Gray => write!(f, "gray"),
+            Self::Purple => write!(f, "purple"),
+            Self::Red => write!(f, "red"),
+            Self::Yellow => write!(f, "yellow")
+        }
+    }
+}
+
+#[derive(Copy, Clone)]
+pub enum BoxType {
+    Dark,
+    Bright
+}
+
+impl Display for BoxType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match *self {
+            Self::Dark => write!(f, "dark"),
+            Self::Bright => write!(f, "bright")
+        }
     }
 }
 

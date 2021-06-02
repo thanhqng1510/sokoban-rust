@@ -11,9 +11,8 @@ use ggez::graphics::Color;
 use crate::constant::{MAX_LEVEL, RESOURCE_PREFIX_PATH};
 use std::cmp::min;
 use std::fs;
-use crate::components::{Position, Direction, Renderable, Wall, Box, Player, Spot, Movable, Blocking, Directional};
+use crate::components::{Position, Direction, Renderable, Wall, Box, Player, Spot, Movable, Blocking, Directional, FloorType, FloorMaterial, WallColor, WallShape, BoxSpotColor, BoxType};
 use crate::resources::game_state::GameState;
-use crate::resources::component_template_data::ComponentTemplateData;
 use crate::entity_builder::EntityBuilder;
 
 
@@ -74,7 +73,6 @@ impl GameContext {
     pub fn register_resources(&mut self) {
         self.world.insert(InputQueue::default());
         self.world.insert(GameState::default());
-        self.world.insert(ComponentTemplateData::default());
     }
 
     pub fn generate_map(&mut self, map_string: String) {
@@ -87,22 +85,22 @@ impl GameContext {
                 let position = Position { x: x as u8, y: y as u8, z: 0 };
 
                 match column {
-                    "." => EntityBuilder::create_floor(&mut self.world, position),
+                    "." => EntityBuilder::create_floor(&mut self.world, position, FloorType::Gravel, FloorMaterial::Sand),
                     "W" => {
-                        EntityBuilder::create_wall(&mut self.world, position);
-                        EntityBuilder::create_floor(&mut self.world, position);
+                        EntityBuilder::create_wall(&mut self.world, position, WallColor::Gray, WallShape::Square);
+                        EntityBuilder::create_floor(&mut self.world, position, FloorType::Gravel, FloorMaterial::Sand);
                     },
                     "P" => {
                         EntityBuilder::create_player(&mut self.world, position, Direction::Down);
-                        EntityBuilder::create_floor(&mut self.world, position);
+                        EntityBuilder::create_floor(&mut self.world, position, FloorType::Gravel, FloorMaterial::Sand);
                     },
                     "B" => {
-                        EntityBuilder::create_box(&mut self.world, position);
-                        EntityBuilder::create_floor(&mut self.world, position);
+                        EntityBuilder::create_box(&mut self.world, position, BoxType::Bright, BoxSpotColor::Red);
+                        EntityBuilder::create_floor(&mut self.world, position, FloorType::Gravel, FloorMaterial::Sand);
                     },
                     "S" => {
-                        EntityBuilder::create_spot(&mut self.world, position);
-                        EntityBuilder::create_floor(&mut self.world, position);
+                        EntityBuilder::create_spot(&mut self.world, position, BoxSpotColor::Red);
+                        EntityBuilder::create_floor(&mut self.world, position, FloorType::Gravel, FloorMaterial::Sand);
                     },
                     "N" => (),
                     c => panic!("Unrecognized map item {}", c)
