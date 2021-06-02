@@ -18,15 +18,15 @@ use crate::entity_builder::EntityBuilder;
 
 
 pub struct MusicSound {
-    pub ingame_music: Source,
-    pub victory_music: Source
+    pub ingame_music: Option<Source>,
+    pub victory_music: Option<Source>
 }
 
 impl MusicSound {
-    pub fn from(context: &mut Context) -> Self {
+    pub fn new() -> Self {
         MusicSound {
-            ingame_music: Source::new(context, "/sounds/musics/ingame_music.mp3").unwrap(),
-            victory_music: Source::new(context, "/sounds/musics/victory_music.mp3").unwrap()
+            ingame_music: None,
+            victory_music: None
         }
     }
 }
@@ -38,23 +38,26 @@ pub struct GameContext {
 }
 
 impl GameContext {
-    pub fn from(world: World, context: &mut Context) -> Self {
+    pub fn from(world: World) -> Self {
         GameContext {
             world,
-            music_sound: MusicSound::from(context),
+            music_sound: MusicSound::new(),
             background_color: Color::new(0.7, 0.7, 0.7, 1.)
         }
     }
 
-    pub fn play_ingame_music(&mut self) {
-        self.music_sound.ingame_music.play().unwrap();
-    }
-
-    pub fn initialize_level(&mut self, level: u8) {
+    pub fn initialize_level(&mut self, level: u8, context: &mut Context) {
         let level = min(level, MAX_LEVEL);
         let map_string= fs::read_to_string(format!("{}/maps/map_{}.txt", RESOURCE_PREFIX_PATH, level))
             .expect(&format!("Unable to read file. Check if level {} exists!", level));
         self.generate_map(map_string);
+
+        self.music_sound.ingame_music = Some(Source::new(context, format!("/sounds/musics/victory_music_{}.mp3", level)).unwrap());
+        self.music_sound.victory_music = Some(Source::new(context, format!("/sounds/musics/victory_music_{}.mp3", level)).unwrap());
+
+        if let Some(ref mut ingame_music) = self.music_sound.ingame_music {
+            ingame_music.play().unwrap();
+        }
     }
 
     pub fn register_components(&mut self) {
