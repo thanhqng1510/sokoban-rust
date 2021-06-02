@@ -111,22 +111,22 @@ impl GameContext {
 
 impl event::EventHandler for GameContext {
     fn update(&mut self, _ctx: &mut Context) -> GameResult {
-        {
-            let mut is = InputSystem::new();
-            is.run_now(&self.world);
-        }
-        {
-            let mut gss = GameplayStateSystem::new();
-            gss.run_now(&self.world);
-        }
+        let mut is = InputSystem::new();
+        is.run_now(&self.world);
+        drop(is);
+
+        let mut gss = GameplayStateSystem::new();
+        gss.run_now(&self.world);
+        drop(gss);
+
         Ok(())
     }
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
-        {
-            let mut rs = RenderingSystem::from(ctx, self);
-            rs.run_now(&self.world);
-        }
+        let mut rs = RenderingSystem::from(ctx, self);
+        rs.run_now(&self.world);
+        drop(rs);
+
         Ok(())
     }
 
