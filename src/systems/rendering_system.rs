@@ -6,14 +6,20 @@ use ggez::nalgebra as na;
 use strfmt::strfmt;
 use crate::constant::TILE_SIZE;
 use crate::resources::game_state::GameState;
-use crate::resources::var::{BackgroundColor, ComponentTemplateData};
+use crate::resources::component_template_data::ComponentTemplateData;
+use crate::game_context::GameContext;
 
 
 pub struct RenderingSystem<'a> {
-    pub context: &'a mut Context
+    pub context: &'a mut Context,
+    pub game_context: &'a GameContext
 }
 
 impl<'a> RenderingSystem<'a> {
+    pub fn from(context: &'a mut Context, game_context: &'a GameContext) -> Self {
+        RenderingSystem { context, game_context }
+    }
+
     pub fn draw_text(&mut self, text: &str, x: f32, y: f32) {
         let text = graphics::Text::new(text);
         let destination = na::Point2::new(x, y);
@@ -33,15 +39,19 @@ impl<'a> RenderingSystem<'a> {
 impl<'a> System<'a> for RenderingSystem<'a> {
     type SystemData = (
         Read<'a, ComponentTemplateData>,
-        Read<'a, BackgroundColor>,
         Read<'a, GameState>,
         ReadStorage<'a, Renderable>
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (component_data, bg_color, game_state, renderables) = data;
+        let (component_data, game_state, renderables) = data;
 
-        graphics::clear(self.context, graphics::Color::new(bg_color.r, bg_color.g, bg_color.b, bg_color.a));
+        graphics::clear(self.context, graphics::Color::new(
+            self.game_context.background_color.r,
+            self.game_context.background_color.g,
+            self.game_context.background_color.b,
+            self.game_context.background_color.a
+        ));
 
         let mut rendering_data = (&renderables).join().collect::<Vec<_>>();
         rendering_data.sort_by_key(|&k| k.position.z);

@@ -3,17 +3,13 @@ use std::path;
 use ggez::{conf, event, GameResult};
 use specs::{World, WorldExt};
 
-use crate::components::register_components;
-use crate::game::Game;
-use crate::levels::initialize_level;
-use crate::resources::register_resources;
+use crate::game_context::GameContext;
 use crate::constant::{AUTHOR, GAME_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, RESOURCE_PREFIX_PATH};
 
 mod components;
-mod entities;
-mod levels;
+mod entity_builder;
 mod systems;
-mod game;
+mod game_context;
 mod resources;
 mod constant;
 
@@ -26,14 +22,13 @@ fn main() -> GameResult {
         .window_mode(conf::WindowMode::default()
             .dimensions(WINDOW_WIDTH, WINDOW_HEIGHT))
         .add_resource_path(path::PathBuf::from(RESOURCE_PREFIX_PATH));
-    let (context, event_loop) = &mut context_builder.build()?;
+    let (application_context, event_loop) = &mut context_builder.build()?;
 
-    let mut game = Game::new(World::new(), context);
-    ///Music test
-    game.play_ingame_music();
-    register_components(&mut game.world);
-    register_resources(&mut game.world);
-    initialize_level(&mut game.world, 0);
+    let mut game_context = GameContext::from(World::new(), application_context);
+    game_context.play_ingame_music();
+    game_context.register_components();
+    game_context.register_resources();
+    game_context.initialize_level(0);
 
-    event::run(context, event_loop, &mut game)
+    event::run(application_context, event_loop, &mut game_context)
 }

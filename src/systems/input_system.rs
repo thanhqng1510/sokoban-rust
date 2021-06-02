@@ -10,9 +10,13 @@ use crate::resources::game_state::GameState;
 type EntityIdMap = HashMap<(u8, u8), u32>;
 type IdVec = Vec<u32>;
 
-pub struct InputSystem {}
+pub struct InputSystem;
 
 impl InputSystem {
+    pub fn new() -> Self {
+        InputSystem {}
+    }
+
     fn handle_movement(&self, key: KeyCode, player_pos: &Position, movables: EntityIdMap, blockings: EntityIdMap) -> Option<IdVec> {
         let (checking_range, is_horizontal) = match key {
             KeyCode::Up => ((0..=player_pos.y).rev().collect::<Vec<_>>(), false),

@@ -4,7 +4,13 @@ use crate::components::{Box, Spot, Renderable};
 use std::collections::HashSet;
 
 
-pub struct GameplayStateSystem {}
+pub struct GameplayStateSystem;
+
+impl GameplayStateSystem {
+    pub fn new() -> Self {
+        GameplayStateSystem {}
+    }
+}
 
 impl<'a> System<'a> for GameplayStateSystem {
     type SystemData = (

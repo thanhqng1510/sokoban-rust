@@ -1,4 +1,4 @@
-use specs::{Component, VecStorage, NullStorage, World, WorldExt};
+use specs::{Component, VecStorage, NullStorage};
 use std::fmt::{Formatter, Display};
 use std::fmt;
 
@@ -10,11 +10,23 @@ pub struct Position {
     pub z: u8
 }
 
+impl Position {
+    pub fn from(x: u8, y: u8, z: u8) -> Self {
+        Position { x, y, z }
+    }
+}
+
 #[derive(Component)]
 #[storage(VecStorage)]
 pub struct Renderable {
     pub position: Position,
     pub resource_template_path: &'static str,
+}
+
+impl Renderable {
+    pub fn from(position: Position, resource_template_path: &'static str) -> Self {
+        Renderable { position, resource_template_path }
+    }
 }
 
 #[derive(Copy, Clone)]
@@ -55,25 +67,61 @@ impl Display for WallShape {
 #[storage(NullStorage)]
 pub struct Wall;
 
+impl Wall {
+    pub fn new() -> Self {
+        Wall {}
+    }
+}
+
 #[derive(Component, Default)]
 #[storage(NullStorage)]
 pub struct Player;
+
+impl Player {
+    pub fn new() -> Self {
+        Player {}
+    }
+}
 
 #[derive(Component, Default)]
 #[storage(NullStorage)]
 pub struct Box;
 
+impl Box {
+    pub fn new() -> Self {
+        Box {}
+    }
+}
+
 #[derive(Component, Default)]
 #[storage(NullStorage)]
 pub struct Spot;
+
+impl Spot {
+    pub fn new() -> Self {
+        Spot {}
+    }
+}
 
 #[derive(Component, Default)]
 #[storage(NullStorage)]
 pub struct Movable;
 
+impl Movable {
+    pub fn new() -> Self {
+        Movable {}
+    }
+}
+
 #[derive(Component, Default)]
 #[storage(NullStorage)]
 pub struct Blocking;
+
+impl Blocking {
+    pub fn new() -> Self {
+        Blocking {}
+    }
+}
 
 #[derive(Copy, Clone)]
 pub enum Direction {
@@ -87,6 +135,12 @@ pub enum Direction {
 #[storage(VecStorage)]
 pub struct Directional {
     pub direction: Direction
+}
+
+impl Directional {
+    pub fn from(direction: Direction) -> Self {
+        Directional { direction }
+    }
 }
 
 #[derive(Copy, Clone)]
@@ -121,15 +175,4 @@ impl Display for FloorType {
             Self::Gravel => write!(f, "gravel")
         }
     }
-}
-
-pub fn register_components(world: &mut World) {
-    world.register::<Renderable>();
-    world.register::<Wall>();
-    world.register::<Player>();
-    world.register::<Box>();
-    world.register::<Spot>();
-    world.register::<Movable>();
-    world.register::<Blocking>();
-    world.register::<Directional>();
 }
