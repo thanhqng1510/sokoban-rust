@@ -1,6 +1,6 @@
 use std::path;
 
-use ggez::{conf, event, GameResult, Context};
+use ggez::{conf, event, GameResult};
 use specs::{World, WorldExt};
 
 use crate::components::register_components;
