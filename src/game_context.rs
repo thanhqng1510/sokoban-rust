@@ -1,6 +1,6 @@
 use specs::{World, RunNow, WorldExt};
 use ggez::{event, Context, GameResult};
-use ggez::event::{KeyCode, KeyMods};
+use ggez::event::{KeyCode, KeyMods, quit};
 use ggez::audio::{Source};
 use ggez::audio::SoundSource;
 use crate::systems::rendering_system::RenderingSystem;
@@ -113,8 +113,13 @@ impl event::EventHandler for GameContext {
         Ok(())
     }
 
-    fn key_down_event(&mut self, _ctx: &mut Context, keycode: KeyCode, _keymods: KeyMods, _repeat: bool) {
-        let mut input_queue = self.world.write_resource::<InputQueue>();
-        input_queue.push(keycode);
+    fn key_down_event(&mut self, ctx: &mut Context, keycode: KeyCode, _keymods: KeyMods, _repeat: bool) {
+        match keycode {
+            KeyCode::Escape => quit(ctx),
+            _ => {
+                let mut input_queue = self.world.write_resource::<InputQueue>();
+                input_queue.push(keycode);
+            }
+        }
     }
 }
