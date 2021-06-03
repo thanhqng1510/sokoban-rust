@@ -18,4 +18,8 @@ impl InputQueue {
     pub fn pop(&mut self) -> Option<KeyCode> {
         self.keys_pressed.pop_front()
     }
+
+    pub fn clear(&mut self) {
+        self.keys_pressed.clear();
+    }
 }

@@ -29,3 +29,10 @@ pub struct GameState {
     pub gameplay_state: GameplayState,
     pub moves_count: u32
 }
+
+impl GameState {
+    pub fn clear(&mut self) {
+        self.gameplay_state = GameplayState::Playing;
+        self.moves_count = 0;
+    }
+}

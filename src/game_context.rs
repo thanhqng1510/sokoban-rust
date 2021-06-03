@@ -7,14 +7,14 @@ use crate::systems::rendering_system::RenderingSystem;
 use crate::resources::input_queue::InputQueue;
 use crate::systems::input_system::InputSystem;
 use crate::systems::gameplay_state_system::GameplayStateSystem;
-use crate::constant::{MAX_LEVEL, RESOURCE_PREFIX_PATH};
-use std::cmp::min;
+use crate::constant::{RESOURCE_PREFIX_PATH, MAX_LEVEL};
 use std::fs;
 use crate::components::{Position, Direction, Renderable, Wall, Box, Player, Spot, Movable, Blocking, Directional, FloorType, FloorMaterial, WallColor, WallShape, BoxSpotColor, BoxType};
 use crate::resources::game_state::GameState;
 use crate::entity_builder::EntityBuilder;
 use crate::resources::sound_library::SoundLibrary;
 use crate::resources::game_vars::GameVars;
+use std::cmp::min;
 
 
 pub struct GameContext {
@@ -27,15 +27,37 @@ impl GameContext {
     }
 
     pub fn initialize_level(&mut self, level: u8, context: &mut Context) {
+        self.world.delete_all();
+        self.world.write_resource::<InputQueue>().clear();
+        self.world.write_resource::<GameState>().clear();
+
         let level = min(level, MAX_LEVEL);
-        let map_string= fs::read_to_string(format!("{}/maps/map_{}.txt", RESOURCE_PREFIX_PATH, level))
-            .expect(&format!("Unable to read file. Check if level {} exists!", level));
+        self.world.write_resource::<GameVars>().current_level = level;
+
+        let map_string= fs::read_to_string(format!("{}/maps/map_{}.txt", RESOURCE_PREFIX_PATH, level)).unwrap();
         self.generate_map(map_string);
 
         let mut sound_lib = self.world.write_resource::<SoundLibrary>();
         sound_lib.music_sound.ingame_music = Some(Source::new(context, format!("/sounds/musics/ingame_music_{}.wav", level)).unwrap());
         sound_lib.music_sound.victory_music = Some(Source::new(context, format!("/sounds/musics/victory_music_{}.wav", level)).unwrap());
 
+        if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music { ingame_music.play().unwrap(); }
+    }
+
+    pub fn restart_level(&mut self) {
+        self.world.delete_all();
+        self.world.write_resource::<InputQueue>().clear();
+        self.world.write_resource::<GameState>().clear();
+
+        let level = self.world.read_resource::<GameVars>().current_level;
+
+        let map_string= fs::read_to_string(format!("{}/maps/map_{}.txt", RESOURCE_PREFIX_PATH, level)).unwrap();
+        self.generate_map(map_string);
+
+        let mut sound_lib = self.world.write_resource::<SoundLibrary>();
+        if let Some(ref mut victory_music) = sound_lib.music_sound.victory_music {
+            if victory_music.playing() { victory_music.stop(); }
+        }
         if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music { ingame_music.play().unwrap(); }
     }
 
@@ -116,6 +138,7 @@ impl event::EventHandler for GameContext {
     fn key_down_event(&mut self, ctx: &mut Context, keycode: KeyCode, _keymods: KeyMods, _repeat: bool) {
         match keycode {
             KeyCode::Escape => quit(ctx),
+            KeyCode::R => self.restart_level(),
             _ => {
                 let mut input_queue = self.world.write_resource::<InputQueue>();
                 input_queue.push(keycode);
