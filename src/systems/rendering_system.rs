@@ -7,6 +7,7 @@ use strfmt::strfmt;
 use crate::constant::TILE_SIZE;
 use crate::resources::game_state::GameState;
 use crate::game_context::GameContext;
+use crate::resources::game_vars::GameVars;
 
 
 pub struct RenderingSystem<'a> {
@@ -37,19 +38,15 @@ impl<'a> RenderingSystem<'a> {
 
 impl<'a> System<'a> for RenderingSystem<'a> {
     type SystemData = (
+        Read<'a, GameVars>,
         Read<'a, GameState>,
         ReadStorage<'a, Renderable>
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (game_state, renderables) = data;
+        let (game_vars, game_state, renderables) = data;
 
-        graphics::clear(self.context, graphics::Color::new(
-            self.game_context.background_color.r,
-            self.game_context.background_color.g,
-            self.game_context.background_color.b,
-            self.game_context.background_color.a
-        ));
+        graphics::clear(self.context, game_vars.background_color);
 
         let mut rendering_data = (&renderables).join().collect::<Vec<_>>();
         rendering_data.sort_by_key(|&k| k.position.z);

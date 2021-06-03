@@ -7,42 +7,23 @@ use crate::systems::rendering_system::RenderingSystem;
 use crate::resources::input_queue::InputQueue;
 use crate::systems::input_system::InputSystem;
 use crate::systems::gameplay_state_system::GameplayStateSystem;
-use ggez::graphics::Color;
 use crate::constant::{MAX_LEVEL, RESOURCE_PREFIX_PATH};
 use std::cmp::min;
 use std::fs;
 use crate::components::{Position, Direction, Renderable, Wall, Box, Player, Spot, Movable, Blocking, Directional, FloorType, FloorMaterial, WallColor, WallShape, BoxSpotColor, BoxType};
 use crate::resources::game_state::GameState;
 use crate::entity_builder::EntityBuilder;
+use crate::resources::sound_library::SoundLibrary;
+use crate::resources::game_vars::GameVars;
 
-
-pub struct MusicSound {
-    pub ingame_music: Option<Source>,
-    pub victory_music: Option<Source>
-}
-
-impl MusicSound {
-    pub fn new() -> Self {
-        MusicSound {
-            ingame_music: None,
-            victory_music: None
-        }
-    }
-}
 
 pub struct GameContext {
     pub world: World,
-    pub music_sound: MusicSound,
-    pub background_color: Color
 }
 
 impl GameContext {
     pub fn from(world: World) -> Self {
-        GameContext {
-            world,
-            music_sound: MusicSound::new(),
-            background_color: Color::new(0.7, 0.7, 0.7, 1.)
-        }
+        GameContext { world }
     }
 
     pub fn initialize_level(&mut self, level: u8, context: &mut Context) {
@@ -51,12 +32,11 @@ impl GameContext {
             .expect(&format!("Unable to read file. Check if level {} exists!", level));
         self.generate_map(map_string);
 
-        self.music_sound.ingame_music = Some(Source::new(context, format!("/sounds/musics/victory_music_{}.mp3", level)).unwrap());
-        self.music_sound.victory_music = Some(Source::new(context, format!("/sounds/musics/victory_music_{}.mp3", level)).unwrap());
+        let mut sound_lib = self.world.write_resource::<SoundLibrary>();
+        sound_lib.music_sound.ingame_music = Some(Source::new(context, format!("/sounds/musics/ingame_music_{}.mp3", level)).unwrap());
+        sound_lib.music_sound.victory_music = Some(Source::new(context, format!("/sounds/musics/victory_music_{}.mp3", level)).unwrap());
 
-        if let Some(ref mut ingame_music) = self.music_sound.ingame_music {
-            ingame_music.play().unwrap();
-        }
+        if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music { ingame_music.play().unwrap(); }
     }
 
     pub fn register_components(&mut self) {
@@ -73,6 +53,8 @@ impl GameContext {
     pub fn register_resources(&mut self) {
         self.world.insert(InputQueue::default());
         self.world.insert(GameState::default());
+        self.world.insert(SoundLibrary::default());
+        self.world.insert(GameVars::default());
     }
 
     pub fn generate_map(&mut self, map_string: String) {
