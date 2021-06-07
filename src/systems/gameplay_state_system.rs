@@ -1,4 +1,4 @@
-use specs::{System, Write, ReadStorage, Join};
+use specs::{System, ReadStorage, Join, WriteExpect};
 use ggez::audio::SoundSource;
 use crate::resources::game_state::{GameState, GameplayState};
 use crate::resources::sound_library::SoundLibrary;
@@ -35,12 +35,16 @@ impl<'a> System<'a> for GameplayStateSystem {
                 .map(|k| (k.1.position.x, k.1.position.y))
                 .collect::<HashSet<_>>();
 
-        for (_, renderable) in (&boxes, &renderables).join() {
-            if !spot_positions.contains(&(renderable.position.x, renderable.position.y)) {
-                game_state.gameplay_state = GameplayState::Playing;
-                return;
+            for (_, renderable) in (&boxes, &renderables).join() {
+                if !spot_positions.contains(&(renderable.position.x, renderable.position.y)) {
+                    game_state.gameplay_state = GameplayState::Playing;
+
+                    if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music {
+                        if !ingame_music.playing() { ingame_music.play().unwrap(); }
+                    }
+                    return;
+                }
             }
-        }
 
             game_state.gameplay_state = GameplayState::Won;
         }
