@@ -4,16 +4,17 @@ use ggez::event::{KeyCode, KeyMods, quit};
 use ggez::audio::{Source};
 use ggez::audio::SoundSource;
 use crate::systems::rendering_system::RenderingSystem;
-use crate::resources::input_queue::InputQueue;
 use crate::systems::input_system::InputSystem;
 use crate::systems::gameplay_state_system::GameplayStateSystem;
 use crate::constant::{RESOURCE_PREFIX_PATH, MAX_LEVEL};
-use std::fs;
 use crate::components::{Position, Direction, Renderable, Wall, Box, Player, Spot, Movable, Blocking, Directional, FloorType, FloorMaterial, WallColor, WallShape, BoxSpotColor, BoxType};
+use crate::resources::input_queue::InputQueue;
 use crate::resources::game_state::GameState;
-use crate::entity_builder::EntityBuilder;
 use crate::resources::sound_library::SoundLibrary;
 use crate::resources::game_vars::GameVars;
+use crate::resources::timer::Timer;
+use crate::entity_builder::EntityBuilder;
+use std::fs;
 use std::cmp::min;
 
 
@@ -77,6 +78,7 @@ impl GameContext {
         self.world.insert(GameState::default());
         self.world.insert(SoundLibrary::default());
         self.world.insert(GameVars::default());
+        self.world.insert(Timer::new());
     }
 
     pub fn generate_map(&mut self, map_string: String) {
