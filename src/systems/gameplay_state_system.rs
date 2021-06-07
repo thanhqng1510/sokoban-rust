@@ -30,9 +30,10 @@ impl<'a> System<'a> for GameplayStateSystem {
             box_spots,
             renderables) = data;
 
-        let spot_positions = (&box_spots, &renderables).join()
-            .map(|k| (k.1.position.x, k.1.position.y))
-            .collect::<HashSet<_>>();
+        if game_state.gameplay_state != GameplayState::Won {
+            let spot_positions = (&box_spots, &renderables).join()
+                .map(|k| (k.1.position.x, k.1.position.y))
+                .collect::<HashSet<_>>();
 
         for (_, renderable) in (&boxes, &renderables).join() {
             if !spot_positions.contains(&(renderable.position.x, renderable.position.y)) {
@@ -41,7 +42,8 @@ impl<'a> System<'a> for GameplayStateSystem {
             }
         }
 
-        game_state.gameplay_state = GameplayState::Won;
+            game_state.gameplay_state = GameplayState::Won;
+        }
 
         if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music { ingame_music.stop(); }
         if let Some(ref mut victory_music) = sound_lib.music_sound.victory_music {

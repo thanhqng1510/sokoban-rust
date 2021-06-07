@@ -2,6 +2,7 @@ use std::fmt::{Display, Formatter};
 use std::fmt;
 
 
+#[derive(Eq, PartialEq)]
 pub enum GameplayState {
     Playing,
     Won
