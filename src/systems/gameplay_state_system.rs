@@ -1,4 +1,4 @@
-use specs::{System, Write, ReadStorage, Join};
+use specs::{System, ReadStorage, Join, WriteExpect};
 use ggez::audio::SoundSource;
 use crate::resources::game_state::{GameState, GameplayState};
 use crate::resources::sound_library::SoundLibrary;
@@ -30,18 +30,24 @@ impl<'a> System<'a> for GameplayStateSystem {
             box_spots,
             renderables) = data;
 
-        let spot_positions = (&box_spots, &renderables).join()
-            .map(|k| (k.1.position.x, k.1.position.y))
-            .collect::<HashSet<_>>();
+        if game_state.gameplay_state != GameplayState::Won {
+            let spot_positions = (&box_spots, &renderables).join()
+                .map(|k| (k.1.position.x, k.1.position.y))
+                .collect::<HashSet<_>>();
 
-        for (_, renderable) in (&boxes, &renderables).join() {
-            if !spot_positions.contains(&(renderable.position.x, renderable.position.y)) {
-                game_state.gameplay_state = GameplayState::Playing;
-                return;
+            for (_, renderable) in (&boxes, &renderables).join() {
+                if !spot_positions.contains(&(renderable.position.x, renderable.position.y)) {
+                    game_state.gameplay_state = GameplayState::Playing;
+
+                    if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music {
+                        if !ingame_music.playing() { ingame_music.play().unwrap(); }
+                    }
+                    return;
+                }
             }
-        }
 
-        game_state.gameplay_state = GameplayState::Won;
+            game_state.gameplay_state = GameplayState::Won;
+        }
 
         if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music { ingame_music.stop(); }
         if let Some(ref mut victory_music) = sound_lib.music_sound.victory_music {
