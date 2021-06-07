@@ -19,8 +19,8 @@ pub struct SoundLibrary {
     pub music_sound: MusicSound
 }
 
-impl Default for SoundLibrary {
-    fn default() -> Self {
+impl SoundLibrary {
+    pub fn new() -> Self {
         SoundLibrary { music_sound: MusicSound::new() }
     }
 }

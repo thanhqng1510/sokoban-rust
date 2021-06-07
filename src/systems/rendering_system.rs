@@ -1,5 +1,5 @@
 use ggez::{Context, graphics};
-use specs::{System, ReadStorage, Join, Read};
+use specs::{System, ReadStorage, Join, ReadExpect};
 use crate::components::Renderable;
 use ggez::graphics::{Image, DrawParam, Color};
 use ggez::nalgebra as na;
@@ -38,8 +38,8 @@ impl<'a> RenderingSystem<'a> {
 
 impl<'a> System<'a> for RenderingSystem<'a> {
     type SystemData = (
-        Read<'a, GameVars>,
-        Read<'a, GameState>,
+        ReadExpect<'a, GameVars>,
+        ReadExpect<'a, GameState>,
         ReadStorage<'a, Renderable>
     );
 

@@ -16,8 +16,8 @@ impl GameplayStateSystem {
 
 impl<'a> System<'a> for GameplayStateSystem {
     type SystemData = (
-        Write<'a, GameState>,
-        Write<'a, SoundLibrary>,
+        WriteExpect<'a, GameState>,
+        WriteExpect<'a, SoundLibrary>,
         ReadStorage<'a, Box>,
         ReadStorage<'a, Spot>,
         ReadStorage<'a, Renderable>

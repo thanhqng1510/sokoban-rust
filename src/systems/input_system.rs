@@ -1,4 +1,4 @@
-use specs::{System, ReadStorage, Write, Join, Entities, WriteStorage};
+use specs::{System, ReadStorage, Join, Entities, WriteStorage, WriteExpect};
 use crate::components::{Player, Position, Movable, Blocking, Renderable, Directional, Direction};
 use crate::resources::input_queue::InputQueue;
 use ggez::event::KeyCode;
@@ -46,8 +46,8 @@ impl InputSystem {
 
 impl<'a> System<'a> for InputSystem {
     type SystemData = (
-        Write<'a, InputQueue>,
-        Write<'a, GameState>,
+        WriteExpect<'a, InputQueue>,
+        WriteExpect<'a, GameState>,
         Entities<'a>,
         WriteStorage<'a, Renderable>,
         WriteStorage<'a, Directional>,

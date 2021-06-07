@@ -74,9 +74,9 @@ impl GameContext {
     }
 
     pub fn register_resources(&mut self) {
-        self.world.insert(InputQueue::default());
+        self.world.insert(InputQueue::new());
         self.world.insert(GameState::default());
-        self.world.insert(SoundLibrary::default());
+        self.world.insert(SoundLibrary::new());
         self.world.insert(GameVars::default());
         self.world.insert(Timer::new());
     }
