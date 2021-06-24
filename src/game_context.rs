@@ -39,8 +39,7 @@ impl GameContext {
         self.generate_map(map_string);
 
         let mut sound_lib = self.world.write_resource::<SoundLibrary>();
-        sound_lib.music_sound.ingame_music = Some(Source::new(context, format!("/sounds/musics/ingame_music_{}.wav", level)).unwrap());
-        sound_lib.music_sound.victory_music = Some(Source::new(context, format!("/sounds/musics/victory_music_{}.wav", level)).unwrap());
+        sound_lib.load_music(context, level);
     }
 
     pub fn restart_level(&mut self) {
