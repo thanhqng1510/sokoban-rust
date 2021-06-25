@@ -1,7 +1,6 @@
 use specs::{World, RunNow, WorldExt};
 use ggez::{event, Context, GameResult};
 use ggez::event::{KeyCode, KeyMods, quit};
-use ggez::audio::{Source};
 use ggez::audio::SoundSource;
 use crate::systems::rendering_system::RenderingSystem;
 use crate::systems::input_system::InputSystem;
@@ -81,31 +80,87 @@ impl GameContext {
     pub fn generate_map(&mut self, map_string: String) {
         let rows = map_string.trim().split('\n').map(|x| x.trim()).collect::<Vec<_>>();
 
-        for (y, &row) in rows.iter().enumerate() {
-            let columns = row.split(' ').collect::<Vec<_>>();
+        for (_, &row) in rows.iter().enumerate() {
+            let columns = row.split(';').map(|x| x.trim()).collect::<Vec<_>>();
+            let entity_data = columns[0].split(' ').collect::<Vec<_>>();
 
-            for (x, &column) in columns.iter().enumerate() {
-                let position = Position { x: x as u8, y: y as u8, z: 0 };
+            for (_, &column) in columns.iter().enumerate().filter(|&(i, _)| i != 0) {
+                let mut position = Position { x: 0, y: 0, z: 0 };
+                for(i, &pos) in column.split(',').collect::<Vec<_>>().iter().enumerate() {
+                    match i {
+                        0 => position.y = pos.parse::<u8>().unwrap(),
+                        1 => position.x = pos.parse::<u8>().unwrap(),
+                        _ => panic!("Dimension of position exceeded 2.")
+                    }
+                }
 
-                match column {
-                    "." => EntityBuilder::create_floor(&mut self.world, position, FloorType::Gravel, FloorMaterial::Sand),
-                    "W" => {
-                        EntityBuilder::create_wall(&mut self.world, position, WallColor::Gray, WallShape::Square);
-                        EntityBuilder::create_floor(&mut self.world, position, FloorType::Gravel, FloorMaterial::Sand);
+                match entity_data[0] {
+                    "floor" => {
+                        let floor_type: FloorType = match entity_data[1] {
+                            "clean" => FloorType::Clean,
+                            "gravel" => FloorType::Gravel,
+                            c => panic!("Unrecognized FloorType {}.", c)
+                        };
+                        let floor_material: FloorMaterial = match entity_data[2] {
+                            "concrete" => FloorMaterial::Concrete,
+                            "dirt" => FloorMaterial::Dirt,
+                            "grass" => FloorMaterial::Grass,
+                            "sand" => FloorMaterial::Sand,
+                            c => panic!("Unrecognized FloorMaterial {}.", c)
+                        };
+                        EntityBuilder::create_floor(&mut self.world, position, floor_type, floor_material);
                     },
-                    "P" => {
+                    "wall" => {
+                        let wall_shape: WallShape = match entity_data[1] {
+                            "square" => WallShape::Square,
+                            "round" => WallShape::Round,
+                            c => panic!("Unrecognized WallShape {}.", c)
+                        };
+                        let wall_color: WallColor = match entity_data[2] {
+                            "beige" => WallColor::Beige,
+                            "black" => WallColor::Black,
+                            "brown" => WallColor::Brown,
+                            "gray" => WallColor::Gray,
+                            c => panic!("Unrecognized WallColor {}.", c)
+                        };
+                        EntityBuilder::create_wall(&mut self.world, position, wall_shape, wall_color);
+                    },
+                    "box" => {
+                        let box_type: BoxType = match entity_data[1] {
+                            "dark" => BoxType::Dark,
+                            "bright" => BoxType::Bright,
+                            c => panic!("Unrecognized BoxType {}.", c)
+                        };
+                        let box_color: BoxSpotColor = match entity_data[2] {
+                            "beige" => BoxSpotColor::Beige,
+                            "black" => BoxSpotColor::Black,
+                            "blue" => BoxSpotColor::Blue,
+                            "brown" => BoxSpotColor::Brown,
+                            "gray" => BoxSpotColor::Gray,
+                            "purple" => BoxSpotColor::Purple,
+                            "red" => BoxSpotColor::Red,
+                            "yellow" => BoxSpotColor::Yellow,
+                            c => panic!("Unrecognized BoxColor {}.", c)
+                        };
+                        EntityBuilder::create_box(&mut self.world, position, box_type, box_color);
+                    },
+                    "spot" => {
+                        let spot_color: BoxSpotColor = match entity_data[1] {
+                            "beige" => BoxSpotColor::Beige,
+                            "black" => BoxSpotColor::Black,
+                            "blue" => BoxSpotColor::Blue,
+                            "brown" => BoxSpotColor::Brown,
+                            "gray" => BoxSpotColor::Gray,
+                            "purple" => BoxSpotColor::Purple,
+                            "red" => BoxSpotColor::Red,
+                            "yellow" => BoxSpotColor::Yellow,
+                            c => panic!("Unrecognized SpotColor {}.", c)
+                        };
+                        EntityBuilder::create_spot(&mut self.world, position, spot_color);
+                    },
+                    "char" => {
                         EntityBuilder::create_player(&mut self.world, position, Direction::Down);
-                        EntityBuilder::create_floor(&mut self.world, position, FloorType::Gravel, FloorMaterial::Sand);
                     },
-                    "B" => {
-                        EntityBuilder::create_box(&mut self.world, position, BoxType::Bright, BoxSpotColor::Red);
-                        EntityBuilder::create_floor(&mut self.world, position, FloorType::Gravel, FloorMaterial::Sand);
-                    },
-                    "S" => {
-                        EntityBuilder::create_spot(&mut self.world, position, BoxSpotColor::Red);
-                        EntityBuilder::create_floor(&mut self.world, position, FloorType::Gravel, FloorMaterial::Sand);
-                    },
-                    "N" => (),
                     c => panic!("Unrecognized map item {}", c)
                 }
             }

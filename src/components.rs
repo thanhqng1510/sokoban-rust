@@ -31,50 +31,6 @@ impl Renderable {
     }
 }
 
-#[derive(Copy, Clone)]
-pub enum WallColor {
-    Beige,
-    Black,
-    Brown,
-    Gray
-}
-
-impl Display for WallColor {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        match *self {
-            Self::Beige => write!(f, "beige"),
-            Self::Black => write!(f, "black"),
-            Self::Brown => write!(f, "brown"),
-            Self::Gray => write!(f, "gray")
-        }
-    }
-}
-
-#[derive(Copy, Clone)]
-pub enum WallShape {
-    Square,
-    Round
-}
-
-impl Display for WallShape {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        match *self {
-            Self::Square => write!(f, "square"),
-            Self::Round => write!(f, "round")
-        }
-    }
-}
-
-#[derive(Component, Default)]
-#[storage(NullStorage)]
-pub struct Wall;
-
-impl Wall {
-    pub fn new() -> Self {
-        Wall {}
-    }
-}
-
 #[derive(Component, Default)]
 #[storage(NullStorage)]
 pub struct Player;
@@ -82,6 +38,56 @@ pub struct Player;
 impl Player {
     pub fn new() -> Self {
         Player {}
+    }
+}
+
+#[derive(Component, Default)]
+#[storage(NullStorage)]
+pub struct Movable;
+
+impl Movable {
+    pub fn new() -> Self {
+        Movable {}
+    }
+}
+
+#[derive(Component, Default)]
+#[storage(NullStorage)]
+pub struct Blocking;
+
+impl Blocking {
+    pub fn new() -> Self {
+        Blocking {}
+    }
+}
+
+#[derive(Copy, Clone)]
+pub enum Direction {
+    Left,
+    Up,
+    Right,
+    Down
+}
+
+#[derive(Component)]
+#[storage(VecStorage)]
+pub struct Directional {
+    pub direction: Direction
+}
+
+impl Directional {
+    pub fn from(direction: Direction) -> Self {
+        Directional { direction }
+    }
+}
+
+#[derive(Component, Default)]
+#[storage(NullStorage)]
+pub struct Box;
+
+impl Box {
+    pub fn new() -> Self {
+        Box {}
     }
 }
 
@@ -129,11 +135,45 @@ impl Display for BoxType {
 
 #[derive(Component, Default)]
 #[storage(NullStorage)]
-pub struct Box;
+pub struct Wall;
 
-impl Box {
+impl Wall {
     pub fn new() -> Self {
-        Box {}
+        Wall {}
+    }
+}
+
+#[derive(Copy, Clone)]
+pub enum WallColor {
+    Beige,
+    Black,
+    Brown,
+    Gray
+}
+
+impl Display for WallColor {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match *self {
+            Self::Beige => write!(f, "beige"),
+            Self::Black => write!(f, "black"),
+            Self::Brown => write!(f, "brown"),
+            Self::Gray => write!(f, "gray")
+        }
+    }
+}
+
+#[derive(Copy, Clone)]
+pub enum WallShape {
+    Square,
+    Round
+}
+
+impl Display for WallShape {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match *self {
+            Self::Square => write!(f, "square"),
+            Self::Round => write!(f, "round")
+        }
     }
 }
 
@@ -144,46 +184,6 @@ pub struct Spot;
 impl Spot {
     pub fn new() -> Self {
         Spot {}
-    }
-}
-
-#[derive(Component, Default)]
-#[storage(NullStorage)]
-pub struct Movable;
-
-impl Movable {
-    pub fn new() -> Self {
-        Movable {}
-    }
-}
-
-#[derive(Component, Default)]
-#[storage(NullStorage)]
-pub struct Blocking;
-
-impl Blocking {
-    pub fn new() -> Self {
-        Blocking {}
-    }
-}
-
-#[derive(Copy, Clone)]
-pub enum Direction {
-    Left,
-    Up,
-    Right,
-    Down
-}
-
-#[derive(Component)]
-#[storage(VecStorage)]
-pub struct Directional {
-    pub direction: Direction
-}
-
-impl Directional {
-    pub fn from(direction: Direction) -> Self {
-        Directional { direction }
     }
 }
 

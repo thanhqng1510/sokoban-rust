@@ -1,5 +1,5 @@
 use ggez::audio::Source;
-use ggez::{Context, GameError};
+use ggez::{Context};
 
 
 pub struct MusicSound {

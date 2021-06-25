@@ -62,8 +62,8 @@ impl<'a> System<'a> for RenderingSystem<'a> {
             graphics::draw(self.context, &image, draw_params).unwrap();
         }
 
-        self.draw_text(&game_state.gameplay_state.to_string(), 525., 80.);
-        self.draw_text(&game_state.moves_count.to_string(), 525., 100.);
+        self.draw_text(&game_state.gameplay_state.to_string(), 600., 80.);
+        self.draw_text(&game_state.moves_count.to_string(), 600., 100.);
 
         graphics::present(self.context).unwrap();
     }
