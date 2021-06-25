@@ -32,11 +32,11 @@ impl<'a> System<'a> for GameplayStateSystem {
 
         if game_state.gameplay_state != GameplayState::Won {
             let spot_positions = (&box_spots, &renderables).join()
-                .map(|k| (k.1.position.x, k.1.position.y))
+                .map(|k| (k.1.position.x, k.1.position.y, &k.1.resource_template_data["spot_color"]))
                 .collect::<HashSet<_>>();
 
             for (_, renderable) in (&boxes, &renderables).join() {
-                if !spot_positions.contains(&(renderable.position.x, renderable.position.y)) {
+                if !spot_positions.contains(&(renderable.position.x, renderable.position.y, &renderable.resource_template_data["box_color"])) {
                     game_state.gameplay_state = GameplayState::Playing;
 
                     if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music {
