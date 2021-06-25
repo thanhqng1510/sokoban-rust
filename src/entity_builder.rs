@@ -7,7 +7,7 @@ use std::collections::HashMap;
 pub struct EntityBuilder;
 
 impl EntityBuilder {
-    pub fn create_wall(world: &mut World, position: Position, color: WallColor, shape: WallShape) {
+    pub fn create_wall(world: &mut World, position: Position, shape: WallShape, color: WallColor) {
         world.create_entity()
             .with(Renderable::from(
                 Position { z: WALL_Z, ..position },

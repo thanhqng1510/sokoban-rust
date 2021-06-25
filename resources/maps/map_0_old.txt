@@ -1,0 +1,9 @@
+N N W W W W W W
+W W W . . . . W
+W . . . B . . W
+W . B . . . . W
+W . P . . . . W
+W . . . . S . W
+W S . . . . . W
+W . . . . . . W
+W W W W W W W W
