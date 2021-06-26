@@ -1,8 +1,9 @@
-use specs::{System, ReadStorage, Join, WriteExpect};
+use specs::{System, ReadStorage, Join, WriteExpect, ReadExpect};
 use ggez::audio::SoundSource;
 use crate::resources::game_state::{GameState, GameplayState};
 use crate::resources::sound_library::SoundLibrary;
 use crate::components::{Box, Spot, Renderable};
+use crate::resources::level_data::LevelData;
 use std::collections::HashSet;
 
 
@@ -18,6 +19,7 @@ impl<'a> System<'a> for GameplayStateSystem {
     type SystemData = (
         WriteExpect<'a, GameState>,
         WriteExpect<'a, SoundLibrary>,
+        ReadExpect<'a, LevelData>,
         ReadStorage<'a, Box>,
         ReadStorage<'a, Spot>,
         ReadStorage<'a, Renderable>
@@ -26,17 +28,25 @@ impl<'a> System<'a> for GameplayStateSystem {
     fn run(&mut self, data: Self::SystemData) {
         let (mut game_state,
             mut sound_lib,
+            level_data,
             boxes,
             spots,
             renderables) = data;
 
         if game_state.gameplay_state != GameplayState::Won {
+            let none_string = "None";
             let spot_positions = (&spots, &renderables).join()
-                .map(|(_, renderable)| (renderable.position.x, renderable.position.y, &renderable.resource_template_data["spot_color"]))
+                .map(|(_, renderable)| (renderable.position.x, renderable.position.y, match level_data.box_spot_identical_mode {
+                    true => &renderable.resource_template_data["spot_color"],
+                    false => none_string
+                }))
                 .collect::<HashSet<_>>();
 
             for (_, renderable) in (&boxes, &renderables).join() {
-                if !spot_positions.contains(&(renderable.position.x, renderable.position.y, &renderable.resource_template_data["box_color"])) {
+                if !spot_positions.contains(&(renderable.position.x, renderable.position.y, match level_data.box_spot_identical_mode {
+                    true => &renderable.resource_template_data["box_color"],
+                    false => none_string
+                })) {
                     game_state.gameplay_state = GameplayState::Playing;
 
                     if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music {
@@ -45,7 +55,6 @@ impl<'a> System<'a> for GameplayStateSystem {
                     return;
                 }
             }
-
             game_state.gameplay_state = GameplayState::Won;
         }
 

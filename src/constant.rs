@@ -24,4 +24,5 @@ pub const PLAYER_Z: u8 = 10;
 pub const SUPPORTED_SOUND_FILE_EXT: [&'static str; 4] = ["wav", "mp3", "ogg", "flac"];
 
 pub const DEFAULT_BACKGROUND_COLOR: (u8, u8, u8, u8) = (180, 180, 180, 255);
+pub const DEFAULT_BOX_SPOT_IDENTICAL_MODE: bool = false;
 pub const DEFAULT_GAME_LEVEL: u8 = 0;
