@@ -1,7 +1,6 @@
 use specs::{World, RunNow, WorldExt};
 use ggez::{event, Context, GameResult};
 use ggez::event::{KeyCode, KeyMods, quit};
-use ggez::audio::SoundSource;
 use crate::systems::rendering_system::RenderingSystem;
 use crate::systems::input_system::InputSystem;
 use crate::systems::gameplay_state_system::GameplayStateSystem;
@@ -10,15 +9,17 @@ use crate::components::{Position, Direction, Renderable, Wall, Box, Player, Spot
 use crate::resources::input_queue::InputQueue;
 use crate::resources::game_state::GameState;
 use crate::resources::sound_library::SoundLibrary;
-use crate::resources::game_vars::GameVars;
+use crate::resources::level_data::LevelData;
 use crate::resources::timer::Timer;
 use crate::entity_builder::EntityBuilder;
 use std::fs;
 use std::cmp::min;
+use serde_json::Value;
+use ggez::graphics::Color;
 
 
 pub struct GameContext {
-    pub world: World,
+    pub world: World
 }
 
 impl GameContext {
@@ -26,36 +27,44 @@ impl GameContext {
         GameContext { world }
     }
 
-    pub fn initialize_level(&mut self, level: u8, context: &mut Context) {
+    pub fn clear(&mut self) {
         self.world.delete_all();
+        self.world.write_resource::<GameState>().reset();
         self.world.write_resource::<InputQueue>().clear();
-        self.world.write_resource::<GameState>().clear();
-
-        let level = min(level, MAX_LEVEL);
-        self.world.write_resource::<GameVars>().current_level = level;
-
-        let map_string= fs::read_to_string(format!("{}/maps/map_{}.txt", RESOURCE_PREFIX_PATH, level)).unwrap();
-        self.generate_map(map_string);
-
-        let mut sound_lib = self.world.write_resource::<SoundLibrary>();
-        sound_lib.load_music(context, level);
+        self.world.write_resource::<LevelData>().reset();
+        self.world.write_resource::<SoundLibrary>().clear();
+        self.world.write_resource::<Timer>().stop();
     }
 
-    pub fn restart_level(&mut self) {
-        self.world.delete_all();
-        self.world.write_resource::<InputQueue>().clear();
-        self.world.write_resource::<GameState>().clear();
+    pub fn load_level(&mut self, level: u8) {
+        let s = fs::read_to_string(format!("{}/levels/level_{}.json", RESOURCE_PREFIX_PATH, level)).unwrap();
+        let level_json: Value = serde_json::from_str(&s).unwrap();
 
-        let level = self.world.read_resource::<GameVars>().current_level;
+        let mut level_data = self.world.write_resource::<LevelData>();
+        level_data.current_level = level;
+        level_data.background_color = Color::from_rgba(
+            level_json["background_color"][0].as_u64().unwrap() as u8,
+            level_json["background_color"][1].as_u64().unwrap() as u8,
+            level_json["background_color"][2].as_u64().unwrap() as u8,
+            level_json["background_color"][3].as_u64().unwrap() as u8
+        );
+        drop(level_data);
 
-        let map_string= fs::read_to_string(format!("{}/maps/map_{}.txt", RESOURCE_PREFIX_PATH, level)).unwrap();
-        self.generate_map(map_string);
+        self.generate_map(level_json["map_string"].as_str().unwrap().to_string());
+    }
 
-        let mut sound_lib = self.world.write_resource::<SoundLibrary>();
-        if let Some(ref mut victory_music) = sound_lib.music_sound.victory_music {
-            if victory_music.playing() { victory_music.stop(); }
-        }
-        if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music { ingame_music.play().unwrap(); }
+    pub fn initialize_level(&mut self, level: u8, context: &mut Context) {
+        self.clear();
+        let level = min(level, MAX_LEVEL);
+
+        self.load_level(level);
+        self.world.write_resource::<SoundLibrary>().load_music(context, level);
+        self.world.write_resource::<Timer>().start();
+    }
+
+    pub fn restart_level(&mut self, context: &mut Context) {
+        let current_level = self.world.write_resource::<LevelData>().current_level;
+        self.initialize_level(current_level, context);
     }
 
     pub fn register_components(&mut self) {
@@ -73,7 +82,7 @@ impl GameContext {
         self.world.insert(InputQueue::new());
         self.world.insert(GameState::default());
         self.world.insert(SoundLibrary::new());
-        self.world.insert(GameVars::default());
+        self.world.insert(LevelData::default());
         self.world.insert(Timer::new());
     }
 
@@ -192,7 +201,7 @@ impl event::EventHandler for GameContext {
     fn key_down_event(&mut self, ctx: &mut Context, keycode: KeyCode, _keymods: KeyMods, _repeat: bool) {
         match keycode {
             KeyCode::Escape => quit(ctx),
-            KeyCode::R => self.restart_level(),
+            KeyCode::R => self.restart_level(ctx),
             _ => {
                 let mut input_queue = self.world.write_resource::<InputQueue>();
                 input_queue.push(keycode);
