@@ -32,7 +32,7 @@ pub struct GameState {
 }
 
 impl GameState {
-    pub fn clear(&mut self) {
+    pub fn reset(&mut self) {
         self.gameplay_state = GameplayState::Playing;
         self.moves_count = 0;
     }

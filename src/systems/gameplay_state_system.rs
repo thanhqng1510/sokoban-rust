@@ -27,12 +27,12 @@ impl<'a> System<'a> for GameplayStateSystem {
         let (mut game_state,
             mut sound_lib,
             boxes,
-            box_spots,
+            spots,
             renderables) = data;
 
         if game_state.gameplay_state != GameplayState::Won {
-            let spot_positions = (&box_spots, &renderables).join()
-                .map(|k| (k.1.position.x, k.1.position.y, &k.1.resource_template_data["spot_color"]))
+            let spot_positions = (&spots, &renderables).join()
+                .map(|(_, renderable)| (renderable.position.x, renderable.position.y, &renderable.resource_template_data["spot_color"]))
                 .collect::<HashSet<_>>();
 
             for (_, renderable) in (&boxes, &renderables).join() {
@@ -40,7 +40,7 @@ impl<'a> System<'a> for GameplayStateSystem {
                     game_state.gameplay_state = GameplayState::Playing;
 
                     if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music {
-                        if !ingame_music.playing() { ingame_music.play().unwrap(); }
+                        if ingame_music.stopped() { ingame_music.play().unwrap(); }
                     }
                     return;
                 }
@@ -49,9 +49,11 @@ impl<'a> System<'a> for GameplayStateSystem {
             game_state.gameplay_state = GameplayState::Won;
         }
 
-        if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music { ingame_music.stop(); }
+        if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music {
+            if ingame_music.playing() { ingame_music.stop(); }}
+
         if let Some(ref mut victory_music) = sound_lib.music_sound.victory_music {
-            if !victory_music.playing() { victory_music.play().unwrap(); }
+            if victory_music.stopped() { victory_music.play().unwrap(); }
         }
     }
 }

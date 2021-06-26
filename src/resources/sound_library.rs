@@ -1,5 +1,6 @@
 use ggez::audio::Source;
 use ggez::{Context};
+use crate::constant::SUPPORTED_SOUND_FILE_EXT;
 
 
 pub struct MusicSound {
@@ -25,19 +26,22 @@ impl SoundLibrary {
         SoundLibrary { music_sound: MusicSound::new() }
     }
 
-    pub fn load_music(&mut self, context: &mut Context, level: u8) {
-        let ext = vec![ ".wav", ".mp3", ".ogg", ".flac" ];
+    pub fn clear(&mut self) {
+        self.music_sound.ingame_music = None;
+        self.music_sound.victory_music = None;
+    }
 
-        if !ext.iter().any(|&s| {
-            if let Ok(source) = Source::new(context, format!("/sounds/musics/ingame_music_{}{}", level, s)) {
+    pub fn load_music(&mut self, context: &mut Context, level: u8) {
+        if !SUPPORTED_SOUND_FILE_EXT.iter().any(|&s| {
+            if let Ok(source) = Source::new(context, format!("/sounds/musics/ingame_music_{}.{}", level, s)) {
                 self.music_sound.ingame_music = Some(source);
                 return true;
             }
             false
         }) { panic!(); }
 
-        if !ext.iter().any(|&s| {
-            if let Ok(source) = Source::new(context, format!("/sounds/musics/victory_music_{}{}", level, s)) {
+        if !SUPPORTED_SOUND_FILE_EXT.iter().any(|&s| {
+            if let Ok(source) = Source::new(context, format!("/sounds/musics/victory_music_{}.{}", level, s)) {
                 self.music_sound.victory_music = Some(source);
                 return true;
             }

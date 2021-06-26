@@ -2,20 +2,28 @@ use std::time::{Instant, Duration};
 
 
 pub struct Timer {
-    clock: Instant
+    clock: Option<Instant>
 }
 
 impl Timer {
     pub fn new() -> Self {
-        Timer { clock: Instant::now() }
+        Timer { clock: Some(Instant::now()) }
+    }
+
+    pub fn start(&mut self) {
+        self.clock = Some(Instant::now());
+    }
+
+    pub fn stop(&mut self) {
+        self.clock = None;
     }
 
     pub fn elapsed(&self) -> Duration {
-        self.clock.elapsed()
+        self.clock.unwrap().elapsed()
     }
 
     pub fn duration_since(&self, earlier: Instant) -> Duration {
-        self.clock.duration_since(earlier)
+        self.clock.unwrap().duration_since(earlier)
     }
 }
 
