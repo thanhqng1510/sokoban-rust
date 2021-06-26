@@ -2,9 +2,9 @@ use specs::{System, ReadStorage, Join, WriteExpect, ReadExpect};
 use ggez::audio::SoundSource;
 use crate::resources::game_state::{GameState, GameplayState};
 use crate::resources::sound_library::SoundLibrary;
-use crate::components::{Box, Spot, Renderable};
 use crate::resources::level_data::LevelData;
-use std::collections::HashSet;
+use crate::components::{Box, Spot, Renderable};
+use std::collections::{HashSet, HashMap};
 
 
 pub struct GameplayStateSystem;
@@ -34,32 +34,41 @@ impl<'a> System<'a> for GameplayStateSystem {
             renderables) = data;
 
         if game_state.gameplay_state != GameplayState::Won {
-            let none_string = "None";
-            let spot_positions = (&spots, &renderables).join()
-                .map(|(_, renderable)| (renderable.position.x, renderable.position.y, match level_data.box_spot_identical_mode {
-                    true => &renderable.resource_template_data["spot_color"],
-                    false => none_string
-                }))
-                .collect::<HashSet<_>>();
+            if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music {
+                if ingame_music.stopped() { ingame_music.play().unwrap(); }
+            }
 
-            for (_, renderable) in (&boxes, &renderables).join() {
-                if !spot_positions.contains(&(renderable.position.x, renderable.position.y, match level_data.box_spot_identical_mode {
-                    true => &renderable.resource_template_data["box_color"],
-                    false => none_string
-                })) {
-                    game_state.gameplay_state = GameplayState::Playing;
+            if level_data.box_spot_identical_mode == true {
+                let spot_positions = (&spots, &renderables).join()
+                    .map(|(_, renderable)| ((renderable.position.x, renderable.position.y), &renderable.resource_template_data["spot_color"]))
+                    .collect::<HashMap<_, _>>();
 
-                    if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music {
-                        if ingame_music.stopped() { ingame_music.play().unwrap(); }
+                for (_, renderable) in (&boxes, &renderables).join() {
+                    if !spot_positions.contains_key(&(renderable.position.x, renderable.position.y)) ||
+                        spot_positions[&(renderable.position.x, renderable.position.y)] != &renderable.resource_template_data["box_color"] {
+                        game_state.gameplay_state = GameplayState::Playing;
+                        return;
                     }
-                    return;
                 }
             }
-            game_state.gameplay_state = GameplayState::Won;
-        }
+            else {
+                let spot_positions = (&spots, &renderables).join()
+                    .map(|(_, renderable)| (renderable.position.x, renderable.position.y))
+                    .collect::<HashSet<_>>();
 
-        if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music {
-            if ingame_music.playing() { ingame_music.stop(); }}
+                for (_, renderable) in (&boxes, &renderables).join() {
+                    if !spot_positions.contains(&(renderable.position.x, renderable.position.y)) {
+                        game_state.gameplay_state = GameplayState::Playing;
+                        return;
+                    }
+                }
+            }
+
+            game_state.gameplay_state = GameplayState::Won;
+            if let Some(ref mut ingame_music) = sound_lib.music_sound.ingame_music {
+                if ingame_music.playing() { ingame_music.stop(); }
+            }
+        }
 
         if let Some(ref mut victory_music) = sound_lib.music_sound.victory_music {
             if victory_music.stopped() { victory_music.play().unwrap(); }
