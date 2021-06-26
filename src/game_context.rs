@@ -42,6 +42,7 @@ impl GameContext {
 
         let mut level_data = self.world.write_resource::<LevelData>();
         level_data.current_level = level;
+        level_data.box_spot_identical_mode = level_json["box_spot_identical_mode"].as_bool().unwrap();
         level_data.background_color = Color::from_rgba(
             level_json["background_color"][0].as_u64().unwrap() as u8,
             level_json["background_color"][1].as_u64().unwrap() as u8,
