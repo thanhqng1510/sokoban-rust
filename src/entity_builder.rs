@@ -33,13 +33,13 @@ impl EntityBuilder {
             .build();
     }
 
-    pub fn create_box(world: &mut World, position: Position, box_type: BoxType, color: BoxSpotColor) {
+    pub fn create_box(world: &mut World, position: Position, box_brightness: BoxBrightness, color: BoxSpotColor) {
         world.create_entity()
             .with(Renderable::from(
                 Position { z: BOX_Z, ..position },
-                "/images/box_{box_type}_{box_color}.png",
+                "/images/box_{box_brightness}_{box_color}.png",
                 vec![
-                      (String::from("box_type"), box_type.to_string()),
+                      (String::from("box_brightness"), box_brightness.to_string()),
                       (String::from("box_color"), color.to_string())
                 ].into_iter().collect()))
             .with(Box::new())

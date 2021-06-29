@@ -5,7 +5,7 @@ use crate::systems::rendering_system::RenderingSystem;
 use crate::systems::input_system::InputSystem;
 use crate::systems::gameplay_state_system::GameplayStateSystem;
 use crate::constant::{RESOURCE_PREFIX_PATH, MAX_LEVEL};
-use crate::components::{Position, Direction, Renderable, Wall, Box, Player, Spot, Movable, Blocking, Directional, FloorType, FloorMaterial, WallColor, WallShape, BoxSpotColor, BoxType};
+use crate::components::{Position, Direction, Renderable, Wall, Box, Player, Spot, Movable, Blocking, Directional, FloorType, FloorMaterial, WallColor, WallShape, BoxSpotColor, BoxBrightness};
 use crate::resources::input_queue::InputQueue;
 use crate::resources::game_state::GameState;
 use crate::resources::sound_library::SoundLibrary;
@@ -136,10 +136,10 @@ impl GameContext {
                         EntityBuilder::create_wall(&mut self.world, position, wall_shape, wall_color);
                     },
                     "box" => {
-                        let box_type: BoxType = match entity_data[1] {
-                            "dark" => BoxType::Dark,
-                            "bright" => BoxType::Bright,
-                            c => panic!("Unrecognized BoxType {}.", c)
+                        let box_type: BoxBrightness = match entity_data[1] {
+                            "dark" => BoxBrightness::Dark,
+                            "bright" => BoxBrightness::Bright,
+                            c => panic!("Unrecognized BoxBrightness {}.", c)
                         };
                         let box_color: BoxSpotColor = match entity_data[2] {
                             "beige" => BoxSpotColor::Beige,

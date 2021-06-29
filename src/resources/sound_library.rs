@@ -33,7 +33,7 @@ impl SoundLibrary {
 
     pub fn load_music(&mut self, context: &mut Context, level: u8) {
         if !SUPPORTED_SOUND_FILE_EXT.iter().any(|&s| {
-            if let Ok(source) = Source::new(context, format!("/sounds/musics/ingame_music_{}.{}", level, s)) {
+            if let Ok(source) = Source::new(context, format!("/sounds/musics/lvl_{}_ingame_music.{}", level, s)) {
                 self.music_sound.ingame_music = Some(source);
                 return true;
             }
@@ -41,7 +41,7 @@ impl SoundLibrary {
         }) { panic!(); }
 
         if !SUPPORTED_SOUND_FILE_EXT.iter().any(|&s| {
-            if let Ok(source) = Source::new(context, format!("/sounds/musics/victory_music_{}.{}", level, s)) {
+            if let Ok(source) = Source::new(context, format!("/sounds/musics/lvl_{}_victory_music.{}", level, s)) {
                 self.music_sound.victory_music = Some(source);
                 return true;
             }

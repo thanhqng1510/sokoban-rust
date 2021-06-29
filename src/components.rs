@@ -119,12 +119,12 @@ impl Display for BoxSpotColor {
 }
 
 #[derive(Copy, Clone)]
-pub enum BoxType {
+pub enum BoxBrightness {
     Dark,
     Bright
 }
 
-impl Display for BoxType {
+impl Display for BoxBrightness {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match *self {
             Self::Dark => write!(f, "dark"),
