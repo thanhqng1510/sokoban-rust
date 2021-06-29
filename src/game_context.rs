@@ -109,12 +109,14 @@ impl GameContext {
                         let floor_type: FloorType = match entity_data[1] {
                             "clean" => FloorType::Clean,
                             "gravel" => FloorType::Gravel,
+                            "plant" => FloorType::Plant,
                             c => panic!("Unrecognized FloorType {}.", c)
                         };
                         let floor_material: FloorMaterial = match entity_data[2] {
                             "concrete" => FloorMaterial::Concrete,
                             "dirt" => FloorMaterial::Dirt,
                             "grass" => FloorMaterial::Grass,
+                            "grass2" => FloorMaterial::Grass2,
                             "sand" => FloorMaterial::Sand,
                             c => panic!("Unrecognized FloorMaterial {}.", c)
                         };
@@ -131,6 +133,7 @@ impl GameContext {
                             "black" => WallColor::Black,
                             "brown" => WallColor::Brown,
                             "gray" => WallColor::Gray,
+                            "pompadourpink" => WallColor::PompadourPink,
                             c => panic!("Unrecognized WallColor {}.", c)
                         };
                         EntityBuilder::create_wall(&mut self.world, position, wall_shape, wall_color);
@@ -150,6 +153,7 @@ impl GameContext {
                             "purple" => BoxSpotColor::Purple,
                             "red" => BoxSpotColor::Red,
                             "yellow" => BoxSpotColor::Yellow,
+                            "orange" => BoxSpotColor::Orange,
                             c => panic!("Unrecognized BoxColor {}.", c)
                         };
                         EntityBuilder::create_box(&mut self.world, position, box_type, box_color);
@@ -164,6 +168,7 @@ impl GameContext {
                             "purple" => BoxSpotColor::Purple,
                             "red" => BoxSpotColor::Red,
                             "yellow" => BoxSpotColor::Yellow,
+                            "orange" => BoxSpotColor::Orange,
                             c => panic!("Unrecognized SpotColor {}.", c)
                         };
                         EntityBuilder::create_spot(&mut self.world, position, spot_color);

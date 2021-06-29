@@ -100,7 +100,8 @@ pub enum BoxSpotColor {
     Gray,
     Purple,
     Red,
-    Yellow
+    Yellow,
+    Orange
 }
 
 impl Display for BoxSpotColor {
@@ -113,7 +114,8 @@ impl Display for BoxSpotColor {
             Self::Gray => write!(f, "gray"),
             Self::Purple => write!(f, "purple"),
             Self::Red => write!(f, "red"),
-            Self::Yellow => write!(f, "yellow")
+            Self::Yellow => write!(f, "yellow"),
+            Self::Orange => write!(f, "orange")
         }
     }
 }
@@ -148,7 +150,8 @@ pub enum WallColor {
     Beige,
     Black,
     Brown,
-    Gray
+    Gray,
+    PompadourPink
 }
 
 impl Display for WallColor {
@@ -157,7 +160,8 @@ impl Display for WallColor {
             Self::Beige => write!(f, "beige"),
             Self::Black => write!(f, "black"),
             Self::Brown => write!(f, "brown"),
-            Self::Gray => write!(f, "gray")
+            Self::Gray => write!(f, "gray"),
+            Self::PompadourPink => write!(f, "pompadourpink")
         }
     }
 }
@@ -192,6 +196,7 @@ pub enum FloorMaterial {
     Concrete,
     Dirt,
     Grass,
+    Grass2, // Grass but brighter
     Sand
 }
 
@@ -201,6 +206,7 @@ impl Display for FloorMaterial {
             Self::Concrete => write!(f, "concrete"),
             Self::Dirt => write!(f, "dirt"),
             Self::Grass => write!(f, "grass"),
+            Self::Grass2 => write!(f, "grass2"),
             Self::Sand => write!(f, "sand")
         }
     }
@@ -209,14 +215,16 @@ impl Display for FloorMaterial {
 #[derive(Copy, Clone)]
 pub enum FloorType {
     Clean,
-    Gravel
+    Gravel,
+    Plant
 }
 
 impl Display for FloorType {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match *self {
             Self::Clean => write!(f, "clean"),
-            Self::Gravel => write!(f, "gravel")
+            Self::Gravel => write!(f, "gravel"),
+            Self::Plant => write!(f, "plant")
         }
     }
 }
