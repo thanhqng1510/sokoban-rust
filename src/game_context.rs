@@ -5,7 +5,7 @@ use crate::systems::rendering_system::RenderingSystem;
 use crate::systems::input_system::InputSystem;
 use crate::systems::gameplay_state_system::GameplayStateSystem;
 use crate::constant::{RESOURCE_PREFIX_PATH, MAX_LEVEL};
-use crate::components::{Position, Direction, Renderable, Wall, Box, Player, Spot, Movable, Blocking, Directional, FloorType, FloorMaterial, WallColor, WallShape, BoxSpotColor, BoxType};
+use crate::components::{Position, Direction, Renderable, Wall, Box, Player, Spot, Movable, Blocking, Directional, FloorType, FloorMaterial, WallColor, WallShape, BoxSpotColor, BoxBrightness};
 use crate::resources::input_queue::InputQueue;
 use crate::resources::game_state::GameState;
 use crate::resources::sound_library::SoundLibrary;
@@ -109,12 +109,14 @@ impl GameContext {
                         let floor_type: FloorType = match entity_data[1] {
                             "clean" => FloorType::Clean,
                             "gravel" => FloorType::Gravel,
+                            "plant" => FloorType::Plant,
                             c => panic!("Unrecognized FloorType {}.", c)
                         };
                         let floor_material: FloorMaterial = match entity_data[2] {
                             "concrete" => FloorMaterial::Concrete,
                             "dirt" => FloorMaterial::Dirt,
                             "grass" => FloorMaterial::Grass,
+                            "grass2" => FloorMaterial::Grass2,
                             "sand" => FloorMaterial::Sand,
                             c => panic!("Unrecognized FloorMaterial {}.", c)
                         };
@@ -131,15 +133,16 @@ impl GameContext {
                             "black" => WallColor::Black,
                             "brown" => WallColor::Brown,
                             "gray" => WallColor::Gray,
+                            "pompadourpink" => WallColor::PompadourPink,
                             c => panic!("Unrecognized WallColor {}.", c)
                         };
                         EntityBuilder::create_wall(&mut self.world, position, wall_shape, wall_color);
                     },
                     "box" => {
-                        let box_type: BoxType = match entity_data[1] {
-                            "dark" => BoxType::Dark,
-                            "bright" => BoxType::Bright,
-                            c => panic!("Unrecognized BoxType {}.", c)
+                        let box_type: BoxBrightness = match entity_data[1] {
+                            "dark" => BoxBrightness::Dark,
+                            "bright" => BoxBrightness::Bright,
+                            c => panic!("Unrecognized BoxBrightness {}.", c)
                         };
                         let box_color: BoxSpotColor = match entity_data[2] {
                             "beige" => BoxSpotColor::Beige,
@@ -150,6 +153,7 @@ impl GameContext {
                             "purple" => BoxSpotColor::Purple,
                             "red" => BoxSpotColor::Red,
                             "yellow" => BoxSpotColor::Yellow,
+                            "orange" => BoxSpotColor::Orange,
                             c => panic!("Unrecognized BoxColor {}.", c)
                         };
                         EntityBuilder::create_box(&mut self.world, position, box_type, box_color);
@@ -164,6 +168,7 @@ impl GameContext {
                             "purple" => BoxSpotColor::Purple,
                             "red" => BoxSpotColor::Red,
                             "yellow" => BoxSpotColor::Yellow,
+                            "orange" => BoxSpotColor::Orange,
                             c => panic!("Unrecognized SpotColor {}.", c)
                         };
                         EntityBuilder::create_spot(&mut self.world, position, spot_color);
