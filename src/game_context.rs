@@ -51,7 +51,7 @@ impl GameContext {
         );
         drop(level_data);
 
-        self.generate_map(level_json["map_string"].as_str().unwrap().to_string());
+        self.generate_map(level_json);
     }
 
     pub fn initialize_level(&mut self, level: u8, context: &mut Context) {
@@ -87,22 +87,15 @@ impl GameContext {
         self.world.insert(Timer::new());
     }
 
-    pub fn generate_map(&mut self, map_string: String) {
-        let rows = map_string.trim().split('\n').map(|x| x.trim()).collect::<Vec<_>>();
+    pub fn generate_map(&mut self, level_json: Value) {
+        let objects = level_json["map_objects"].as_array().unwrap();
 
-        for (_, &row) in rows.iter().enumerate() {
-            let columns = row.split(';').map(|x| x.trim()).collect::<Vec<_>>();
-            let entity_data = columns[0].split(' ').collect::<Vec<_>>();
+        for (_, object) in objects.iter().enumerate() {
+            let entity_data = (object.as_str().unwrap()).split(' ').collect::<Vec<_>>();
+            let object_poslist = level_json[object.as_str().unwrap()].as_array().unwrap();
 
-            for (_, &column) in columns.iter().enumerate().filter(|&(i, _)| i != 0) {
-                let mut position = Position { x: 0, y: 0, z: 0 };
-                for(i, &pos) in column.split(',').collect::<Vec<_>>().iter().enumerate() {
-                    match i {
-                        0 => position.y = pos.parse::<u8>().unwrap(),
-                        1 => position.x = pos.parse::<u8>().unwrap(),
-                        _ => panic!("Dimension of position exceeded 2.")
-                    }
-                }
+            for (_, object_pos) in object_poslist.iter().enumerate() {
+                let mut position = Position { x: object_pos[1].as_u64().unwrap() as u8, y: object_pos[0].as_u64().unwrap() as u8, z: 0 };
 
                 match entity_data[0] {
                     "floor" => {
