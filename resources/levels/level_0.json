@@ -1,8 +1,6 @@
  {
    "background_color": [180, 180, 180, 255],
    "box_spot_identical_mode": true,
-   "ingame_music": "House In a Forest Loop",
-   "victory_music": "victory_music",
    "map": {
      "number_of_rows": 9,
      "row_0": [ [],[],[ "floor gravel sand","wall square gray" ],[ "floor gravel sand","wall square gray" ],[ "floor gravel sand","wall square gray" ],[ "floor gravel sand","wall square gray" ],[ "floor gravel sand","wall square gray" ],[ "floor gravel sand","wall square gray" ] ],
