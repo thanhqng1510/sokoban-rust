@@ -4,8 +4,8 @@ use ggez::event::{KeyCode, KeyMods, quit};
 use crate::systems::rendering_system::RenderingSystem;
 use crate::systems::input_system::InputSystem;
 use crate::systems::gameplay_state_system::GameplayStateSystem;
-use crate::constant::{RESOURCE_PREFIX_PATH, MAX_LEVEL};
-use crate::components::{Position, Direction, Renderable, Wall, Box, Player, Spot, Movable, Blocking, Directional, FloorType, FloorMaterial, WallColor, WallShape, BoxSpotColor, BoxBrightness};
+use crate::constant::{RESOURCE_PREFIX_PATH, MAX_LEVEL, ENTITY_DATA_PATH};
+use crate::components::{Position, Direction, Renderable, Wall, Box, Player, Spot, Movable, Blocking, Directional};
 use crate::resources::input_queue::InputQueue;
 use crate::resources::game_state::GameState;
 use crate::resources::sound_library::SoundLibrary;
@@ -88,6 +88,9 @@ impl GameContext {
     }
 
     pub fn generate_map(&mut self, map_string: String) {
+        let s = fs::read_to_string(ENTITY_DATA_PATH).unwrap();
+        let entity_data_json: Value = serde_json::from_str(&s).unwrap();
+
         let rows = map_string.trim().split('\n').map(|x| x.trim()).collect::<Vec<_>>();
 
         for (_, &row) in rows.iter().enumerate() {
@@ -106,77 +109,56 @@ impl GameContext {
 
                 match entity_data[0] {
                     "floor" => {
-                        let floor_type: FloorType = match entity_data[1] {
-                            "clean" => FloorType::Clean,
-                            "gravel" => FloorType::Gravel,
-                            "plant" => FloorType::Plant,
-                            c => panic!("Unrecognized FloorType {}.", c)
-                        };
-                        let floor_material: FloorMaterial = match entity_data[2] {
-                            "concrete" => FloorMaterial::Concrete,
-                            "dirt" => FloorMaterial::Dirt,
-                            "grass" => FloorMaterial::Grass,
-                            "grass2" => FloorMaterial::Grass2,
-                            "sand" => FloorMaterial::Sand,
-                            c => panic!("Unrecognized FloorMaterial {}.", c)
-                        };
+                        let floor_type = entity_data[1];
+                        if entity_data_json["floor"]["type"].as_array().unwrap().iter().all(|val| {
+                            return val.as_str() != Some(floor_type); }) {
+                            panic!("Unrecognized floor type {}.", floor_type);
+                        }
+                        let floor_material = entity_data[2];
+                        if entity_data_json["floor"]["material"].as_array().unwrap().iter().all(|val| {
+                            return val.as_str() != Some(floor_material); }) {
+                            panic!("Unrecognized floor material {}.", floor_material);
+                        }
                         EntityBuilder::create_floor(&mut self.world, position, floor_type, floor_material);
                     },
                     "wall" => {
-                        let wall_shape: WallShape = match entity_data[1] {
-                            "square" => WallShape::Square,
-                            "round" => WallShape::Round,
-                            c => panic!("Unrecognized WallShape {}.", c)
-                        };
-                        let wall_color: WallColor = match entity_data[2] {
-                            "beige" => WallColor::Beige,
-                            "black" => WallColor::Black,
-                            "brown" => WallColor::Brown,
-                            "gray" => WallColor::Gray,
-                            "pompadourpink" => WallColor::PompadourPink,
-                            c => panic!("Unrecognized WallColor {}.", c)
-                        };
+                        let wall_shape = entity_data[1];
+                        if entity_data_json["wall"]["shape"].as_array().unwrap().iter().all(|val| {
+                            return val.as_str() != Some(wall_shape); }) {
+                            panic!("Unrecognized wall shape {}.", wall_shape);
+                        }
+                        let wall_color = entity_data[2];
+                        if entity_data_json["wall"]["color"].as_array().unwrap().iter().all(|val| {
+                            return val.as_str() != Some(wall_color); }) {
+                            panic!("Unrecognized wall color {}.", wall_color);
+                        }
                         EntityBuilder::create_wall(&mut self.world, position, wall_shape, wall_color);
                     },
                     "box" => {
-                        let box_type: BoxBrightness = match entity_data[1] {
-                            "dark" => BoxBrightness::Dark,
-                            "bright" => BoxBrightness::Bright,
-                            c => panic!("Unrecognized BoxBrightness {}.", c)
-                        };
-                        let box_color: BoxSpotColor = match entity_data[2] {
-                            "beige" => BoxSpotColor::Beige,
-                            "black" => BoxSpotColor::Black,
-                            "blue" => BoxSpotColor::Blue,
-                            "brown" => BoxSpotColor::Brown,
-                            "gray" => BoxSpotColor::Gray,
-                            "purple" => BoxSpotColor::Purple,
-                            "red" => BoxSpotColor::Red,
-                            "yellow" => BoxSpotColor::Yellow,
-                            "orange" => BoxSpotColor::Orange,
-                            c => panic!("Unrecognized BoxColor {}.", c)
-                        };
-                        EntityBuilder::create_box(&mut self.world, position, box_type, box_color);
+                        let box_brightness = entity_data[1];
+                        if entity_data_json["box"]["brightness"].as_array().unwrap().iter().all(|val| {
+                            return val.as_str() != Some(box_brightness); }) {
+                            panic!("Unrecognized box brightness {}.", box_brightness);
+                        }
+                        let box_color = entity_data[2];
+                        if entity_data_json["box"]["color"].as_array().unwrap().iter().all(|val| {
+                            return val.as_str() != Some(box_color); }) {
+                            panic!("Unrecognized box color {}.", box_color);
+                        }
+                        EntityBuilder::create_box(&mut self.world, position, box_brightness, box_color);
                     },
                     "spot" => {
-                        let spot_color: BoxSpotColor = match entity_data[1] {
-                            "beige" => BoxSpotColor::Beige,
-                            "black" => BoxSpotColor::Black,
-                            "blue" => BoxSpotColor::Blue,
-                            "brown" => BoxSpotColor::Brown,
-                            "gray" => BoxSpotColor::Gray,
-                            "purple" => BoxSpotColor::Purple,
-                            "red" => BoxSpotColor::Red,
-                            "yellow" => BoxSpotColor::Yellow,
-                            "orange" => BoxSpotColor::Orange,
-                            c => panic!("Unrecognized SpotColor {}.", c)
-                        };
+                        let spot_color = entity_data[1];
+                        if entity_data_json["spot"]["color"].as_array().unwrap().iter().all(|val| {
+                            return val.as_str() != Some(spot_color); }) {
+                            panic!("Unrecognized spot color {}.", spot_color);
+                        }
                         EntityBuilder::create_spot(&mut self.world, position, spot_color);
                     },
                     "char" => {
                         EntityBuilder::create_player(&mut self.world, position, Direction::Down);
                     },
-                    c => panic!("Unrecognized map item {}", c)
+                    c => panic!("Unrecognized map item {}.", c)
                 }
             }
         }

@@ -1,0 +1,66 @@
+{
+  "floor": {
+    "type": [
+      "clean",
+      "gravel",
+      "plant"
+      ],
+    "material": [
+      "concrete",
+      "dirt",
+      "grass",
+      "grass2",
+      "sand"
+    ]
+  },
+
+  "spot": {
+    "color": [
+      "beige",
+      "black",
+      "blue",
+      "brown",
+      "gray",
+      "purple",
+      "red",
+      "yellow",
+      "orange"
+    ]
+  },
+
+  "box": {
+    "brightness": [
+      "dark",
+      "bright"
+    ],
+    "color": [
+      "beige",
+      "black",
+      "blue",
+      "brown",
+      "gray",
+      "purple",
+      "red",
+      "yellow",
+      "orange"
+    ]
+  },
+
+  "wall": {
+    "shape": [
+      "square",
+      "round"
+    ],
+    "color": [
+      "beige",
+      "black",
+      "brown",
+      "gray",
+      "pompadourpink"
+    ]
+  },
+
+  "char": {
+    "direction": {}
+  }
+}

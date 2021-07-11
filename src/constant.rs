@@ -7,6 +7,7 @@ pub const WINDOW_HEIGHT: f32 = TILE_SIZE * MAP_HEIGHT as f32;
 pub const RESOURCE_PREFIX_PATH: &'static str = "./resources";
 pub const SETTING_PATH: &'static str = "./data/settings.json";
 pub const GAME_DATA_PATH: &'static str = "./data/game_data.json";
+pub const ENTITY_DATA_PATH: &'static str = "./data/entity_data.json";
 
 pub const MAP_WIDTH: u8 = 12;
 pub const MAP_HEIGHT: u8 = 9;
